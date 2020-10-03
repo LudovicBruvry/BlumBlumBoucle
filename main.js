@@ -41,11 +41,11 @@ function drawPlanets() {
 
 function drawShip() {
   resetMatrix();
-  // translate(ship.x, ship.y);
-  // rotate(ship.orientation);
+  translate(ship.x, ship.y);
+  rotate(ship.orientation);
   fill(color('#FFF'));
   stroke(color('#000'));
-  triangle(ship.x + 100, ship.y, ship.x - 5, ship.y - 5, ship.x - 5, ship.y + 5);
+  triangle(10, 0, -5, -5, -5, 5);
 }
 
 function findCircleLineIntersections(r, h, k, m, n) {
@@ -98,11 +98,6 @@ function drawRays() {
   translate(ship.x, ship.y);
   rotate(ship.orientation);
   line(0, 0, 2000, 0);
-  resetMatrix();
-  stroke(color('#0F0'));
-  const dx = 1000 * cos(ship.orientation);
-  const dy = 1000 * sin(ship.orientation);
-  line(ship.x, ship.y, dx, dy);
 
   resetMatrix();
   stroke(color('#AAA'));
@@ -116,6 +111,8 @@ function drawRays() {
     const pts = findCircleLineIntersections(r, x, y, m, n);
     const y0 = m * pts[0] + n;
     const y1 = m * pts[1] + n;
+    const dx = ship.x + (1000 * cos(ship.orientation));
+    const dy = ship.y + (1000 * sin(ship.orientation));  
 
     if (intersects(x, y, pts[0], y0, ship.x, ship.y, dx, dy)) {
       stroke(color('#F00'));
