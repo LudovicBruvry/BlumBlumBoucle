@@ -1,0 +1,69 @@
+<html>
+	<head>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+		<script>
+function preload() {
+
+  // create an animation from a sequence of numbered images
+  // NOTE: the web editor conversion of image names to file paths
+  // makes it so that we can't use the p5.play feature that
+  // fills in the numbers in between... so we have to list them all here.
+  ghost = createSprite(400, 150, 50, 100);
+  ghost.addAnimation('standing',
+                     '..\Crateres\c01.png',
+                     '..\Crateres\c02.png',
+                     '..\Crateres\c03.png',
+                     '..\Crateres\c04.png',
+                     '..\Crateres\c05.png',
+                     '..\Crateres\c06.png',
+                     '..\Crateres\c07.png');
+}
+
+function setup() {
+  createCanvas(800, 300);
+}
+
+function draw() {
+  background(255, 255, 255);
+  ellipse(50,50,80,80);
+  drawSprites();
+}
+		</script>
+	</head>
+	<body>
+		<h1> Test Canvas </h1>
+		<canvas id="cnv" style="background-color:orange; width:1200px; height:800px;" > </canvas>
+		<div>
+			<img style="width:10px; height:10px;" src="..\Crateres\c01.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c02.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c03.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c04.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c05.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c06.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c07.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c08.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c09.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c10.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c11.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c12.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c13.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c14.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c15.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c16.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c17.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c18.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c19.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c20.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c21.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c22.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c23.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c24.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c25.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c26.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c27.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c28.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c29.png" ></img>
+			<img style="width:10px; height:10px;" src="..\Crateres\c30.png" ></img>
+		</div>
+	</body>
+</html>
