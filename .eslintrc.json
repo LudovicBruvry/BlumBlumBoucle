@@ -1,0 +1,6 @@
+{
+    "extends": [ "airbnb-base", "p5js"],
+    "rules": {
+        "object-curly-newline": "off"
+    }
+}
