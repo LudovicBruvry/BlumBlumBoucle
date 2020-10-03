@@ -13,8 +13,8 @@ const ship = {
   y: 400,
   speed: 0.5,
   orientation: 0,
-  planetAngle: Math.PI,
-  planetIndex: 2,
+  planetAngle: -Math.PI / 4,
+  planetIndex: 1,
   clockwise: true,
 };
 
@@ -105,27 +105,32 @@ function drawRays() {
     stroke(color('#AAA'));
     line(ship.x, ship.y, x, y);
     const r = (size + orbitDistance + orbitDistance) / 2;
+    const r2 = size / 2;
     const im = (y - ship.y) / (x - ship.x);
     const m = -1 / im;
     const n = y - (m * x);
     const pts = findCircleLineIntersections(r, x, y, m, n);
+    const pts2 = findCircleLineIntersections(r2, x, y, m, n);
     const y0 = m * pts[0] + n;
     const y1 = m * pts[1] + n;
+    const y2 = m * pts2[0] + n;
+    const y3 = m * pts2[1] + n;
     const dx = ship.x + (1000 * cos(ship.orientation));
-    const dy = ship.y + (1000 * sin(ship.orientation));  
+    const dy = ship.y + (1000 * sin(ship.orientation));
 
-    if (intersects(x, y, pts[0], y0, ship.x, ship.y, dx, dy)) {
-      stroke(color('#F00'));
-    } else {
-      stroke(color('#AAA'));
-    }
-    line(x, y, pts[0], y0);
-    if (intersects(x, y, pts[1], y1, ship.x, ship.y, dx, dy)) {
-      stroke(color('#F00'));
-    } else {
-      stroke(color('#AAA'));
-    }
-    line(x, y, pts[1], y1);
+    // SUCCES
+    stroke(color('#AAA'));
+    if (intersects(pts[0], y0, pts2[0], y2, ship.x, ship.y, dx, dy)) stroke(color('#0F0'));
+    line(pts[0], y0, pts2[0], y2);
+
+    stroke(color('#AAA'));
+    if (intersects(pts[1], y1, pts2[1], y3, ship.x, ship.y, dx, dy)) stroke(color('#0F0'));
+    line(pts[1], y1, pts2[1], y3);
+
+    // MORT
+    stroke(color('#AAA'));
+    if (intersects(pts2[0], y2, pts2[1], y3, ship.x, ship.y, dx, dy)) stroke(color('#F00'));
+    line(pts2[0], y2, pts2[1], y3);
   });
 }
 
