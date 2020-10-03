@@ -7,11 +7,9 @@ const SHOW_RAYS = true;
 const planets = [
   { x: 300, y: 400, size: 80, color: '#F0F', orbitDistance: 50 },
   { x: 600, y: 700, size: 60, color: '#0FF', orbitDistance: 50 },
-  /*
   { x: 600, y: 200, size: 60, color: '#0FF', orbitDistance: 50 },
   { x: 200, y: 100, size: 15, color: '#FF0', orbitDistance: 50 },
   { x: 200, y: 700, size: 15, color: '#FF0', orbitDistance: 50 },
-  */
 ];
 
 const orbitSpeed = 1;
@@ -72,36 +70,32 @@ function drawRays() {
     const im = (y - ship.y) / (x - ship.x);
     const m = -1 / im;
     const n = y - (m * x);
-    const pts = findCircleLineIntersections(r, x, y, m, n);
-    const pts2 = findCircleLineIntersections(r2, x, y, m, n);
-    const y0 = m * pts[0] + n;
-    const y1 = m * pts[1] + n;
-    const y2 = m * pts2[0] + n;
-    const y3 = m * pts2[1] + n;
+    const ptsOuterOrbit = findCircleLineIntersections(r, x, y, m, n);
+    const ptsInnerCircle = findCircleLineIntersections(r2, x, y, m, n);
     const dx = ship.x + (1000 * cos(ship.orientation));
     const dy = ship.y + (1000 * sin(ship.orientation));
 
     // SUCCES
-    const isIntersectingWithRightCirclePoint = intersects(pts[0], y0, pts2[0], y2, ship.x, ship.y, dx, dy);
+    const isIntersectingWithRightCirclePoint = intersects(ptsOuterOrbit[0].x, ptsOuterOrbit[0].y, ptsInnerCircle[0].x, ptsInnerCircle[0].y, ship.x, ship.y, dx, dy);
     if (isIntersectingWithRightCirclePoint) stroke(color('blue'));
     if (SHOW_RAYS) {
       stroke(color('#AAA'));
-      line(pts[0], y0, pts2[0], y2);
+      line(ptsOuterOrbit[0].x, ptsOuterOrbit[0].y, ptsInnerCircle[0].x, ptsInnerCircle[0].y);
     }
 
-    const isIntersectingWithLeftCirclePoint = intersects(pts[1], y1, pts2[1], y3, ship.x, ship.y, dx, dy);
+    const isIntersectingWithLeftCirclePoint = intersects(ptsOuterOrbit[1].x, ptsOuterOrbit[1].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
     if (isIntersectingWithLeftCirclePoint) stroke(color('#0F0'));
     if (SHOW_RAYS) {
       stroke(color('#AAA'));
-      line(pts[1], y1, pts2[1], y3);
+      line(ptsOuterOrbit[1].x, ptsOuterOrbit[1].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y);
     }
 
     // MORT
-    const isIntersectingWithPlanet = intersects(pts2[0], y2, pts2[1], y3, ship.x, ship.y, dx, dy);
+    const isIntersectingWithPlanet = intersects(ptsInnerCircle[0].x, ptsInnerCircle[0].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
     if (isIntersectingWithPlanet) stroke(color('#F00'));
     if (SHOW_RAYS) {
       stroke(color('#AAA'));
-      line(pts2[0], y2, pts2[1], y3);
+      line(ptsInnerCircle[0].x, ptsInnerCircle[0].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y);
     }
 
     if (isIntersectingWithPlanet) {
@@ -172,10 +166,7 @@ function calculateShipTrajectory() {
   resetMatrix();
 
   planets.forEach((planet, index) => {
-    const { x } = planet;
-    const { y } = planet;
-    const { size } = planet;
-    const { orbitDistance } = planet;
+    const { x, y, size, orbitDistance } = planet;
 
     if (index === ship.planetIndex) {
       return; // No need to check collision beetween the planet where the ship is
@@ -187,30 +178,24 @@ function calculateShipTrajectory() {
     const im = (y - ship.y) / (x - ship.x);
     const m = -1 / im;
     const n = y - (m * x);
-    const pts = findCircleLineIntersections(r, x, y, m, n);
-    const pts2 = findCircleLineIntersections(r2, x, y, m, n);
-    const pts3 = findCircleLineIntersections(r3, x, y, m, n);
-    const y0 = m * pts[0] + n;
-    const y1 = m * pts[1] + n;
-    const y2 = m * pts2[0] + n;
-    const y3 = m * pts2[1] + n;
-    const y4 = m * pts3[0] + n;
-    const y5 = m * pts3[1] + n;
+    const ptsOuterOrbit = findCircleLineIntersections(r, x, y, m, n);
+    const ptsInnerCircle = findCircleLineIntersections(r2, x, y, m, n);
+    const ptsInnerOrbit = findCircleLineIntersections(r3, x, y, m, n);
     const dx = ship.x + (1000 * cos(ship.orientation));
     const dy = ship.y + (1000 * sin(ship.orientation));
 
     // SUCCES
-    const isIntersectingWithRightCirclePoint = intersects(pts[0], y0, pts2[0], y2, ship.x, ship.y, dx, dy);
-    const isIntersectingWithLeftCirclePoint = intersects(pts[1], y1, pts2[1], y3, ship.x, ship.y, dx, dy);
-    const isIntersectingWithPlanet = intersects(pts2[0], y2, pts2[1], y3, ship.x, ship.y, dx, dy);
+    const isIntersectingWithRightCirclePoint = intersects(ptsOuterOrbit[0].x, ptsOuterOrbit[0].y, ptsInnerCircle[0].x, ptsInnerCircle[0].y, ship.x, ship.y, dx, dy);
+    const isIntersectingWithLeftCirclePoint = intersects(ptsOuterOrbit[1].x, ptsOuterOrbit[1].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
+    const isIntersectingWithPlanet = intersects(ptsInnerCircle[0].x, ptsInnerCircle[0].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
 
     if (isIntersectingWithRightCirclePoint || isIntersectingWithLeftCirclePoint) {
       ship.isOrbitValidated = true;
       ship.nextPlanetIndex = index;
 
       const anchorPoint = isIntersectingWithRightCirclePoint
-        ? { x: pts3[0], y: y4 }
-        : { x: pts3[1], y: y5 };
+        ? { x: ptsInnerOrbit[0].x, y: ptsInnerOrbit[0].y }
+        : { x: ptsInnerOrbit[1].x, y: ptsInnerOrbit[1].y };
 
       ship.orientation = getOrbitAngle({ x: ship.x, y: ship.y }, anchorPoint);
 

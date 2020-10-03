@@ -23,14 +23,13 @@ function findCircleLineIntersections(r, h, k, m, n) {
   const d = sq(b) - 4 * a * c;
   if (d >= 0) {
     // insert into quadratic formula
+    const x1 = (-b + sqrt(sq(b) - 4 * a * c)) / (2 * a);
+    const x2 = (-b - sqrt(sq(b) - 4 * a * c)) / (2 * a);
     const intersections = [
-      (-b + sqrt(sq(b) - 4 * a * c)) / (2 * a),
-      (-b - sqrt(sq(b) - 4 * a * c)) / (2 * a),
+      { x: x1, y: m * x1 + n },
+      { x: x2, y: m * x2 + n },
     ];
-    if (d === 0) {
-      // only 1 intersection
-      return [intersections[0]];
-    }
+    if (d === 0) return [intersections[0]];
     return intersections;
   }
   // no intersection
