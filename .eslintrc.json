@@ -1,6 +1,13 @@
 {
-    "extends": [ "airbnb-base", "p5js"],
+    "env": {
+        "browser": true
+    },
+    "extends": [
+        "airbnb-base",
+        "p5js"
+    ],
     "rules": {
-        "object-curly-newline": "off"
+        "object-curly-newline": "off",
+        "max-len": "off"
     }
 }
