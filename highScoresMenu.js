@@ -36,13 +36,18 @@ let highScoresMenu = {
 		],
 	display: function(){
 		
-		getHighScoresAPI();
+		this.getHighScoresAPI().then(data => {
+			
+			console.log(data);
 		
-		document.getElementById("homeMenu").classList.add("menuHidden");
-		document.getElementById("highScoresMenu").classList.remove("menuHidden");
-		highScoresMenu.levelSelected = 0;	
-		highScoresMenu.getHighScoresForLevel(highScoresMenu.levelSelected);
+		    highScoresMenu.highScores = JSON.parse(data);
+		
+			document.getElementById("homeMenu").classList.add("menuHidden");
+			document.getElementById("highScoresMenu").classList.remove("menuHidden");
+			highScoresMenu.levelSelected = 0;	
+			highScoresMenu.getHighScoresForLevel(highScoresMenu.levelSelected);
 			document.getElementById("levelSelectedText").innerHTML = 'Tutorial level';
+		});
 		
 	},
 	previousLevel: function(){
@@ -76,7 +81,6 @@ let highScoresMenu = {
 		let content = "";
 		if(result.length >= 1){
 			result[0].highScores.forEach((e, i) => {
-				console.log(JSON.stringify(e));
 				content += 
 					'<div class="highScoreTableEntry">'+
 						'<div>#'+ (i+1) +'</div><div> - '+ e.playerName+'</div><div>'+ e.time +'s</div>'+
@@ -88,21 +92,24 @@ let highScoresMenu = {
 		
 	},
 	getHighScoresAPI : function() {
-		var request = new XMLHttpRequest();
-
-		request.open('GET', 'https://scoreback.herokuapp.com', true);
 		
-		request.onload = function () {
-		  var data = JSON.parse(this.response)
+		return new Promise((resolve, reject) => {
+	
+			var request = new XMLHttpRequest();
 
-		  if (request.status >= 200 && request.status < 400) {
-				highScores = data;
+			request.open('GET', 'https://scoreback.herokuapp.com', true);
+			
+			request.onload = () => {
+				if(request.status >= 200 && request.status < 300) {
+					resolve(request.response);
+				}
+				else
+				{
+					reject('Error');
+				}
 			}
-		    else {
-			console.log('error');
-		  }
-		}
-		request.send();
+			request.send();
+		});
 	}
 
 };
