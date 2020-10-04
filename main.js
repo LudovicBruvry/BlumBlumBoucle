@@ -76,7 +76,8 @@ function preload() {
       loadImage('./Assets/Sprites/Rock2.png'),
       loadImage('./Assets/Sprites/Rock3.png'),
       loadImage('./Assets/Sprites/Rock4.png'),
-    ]
+    ],
+    ship: loadImage('./Assets/Sprites/Ship.png'),
   };
 }
 
@@ -140,19 +141,16 @@ function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
   return { x: x1 * (1.0 - percentage) + x2 * percentage, y: y1 * (1.0 - percentage) + y2 * percentage };
 }
 
-function drawAsteroidLine(pointA, pointB) {
-  stroke(color('black'));
-  line(pointA.x, pointA.y, pointB.x, pointB.y);
-  for (let i = 0; i <= 100; i += 10) {
-    let pos = getPositionAlongTheLine(pointA.x, pointA.y, pointB.x, pointB.y, i / 100);
-    image(images.rocks[0], pos.x - 9, pos.y - 9, 18, 18);
-  }
+function drawAsteroidLine(pointA, pointB, points) {
+  points.forEach((point) => {
+    image(images.rocks[point.type], (point.pos.x - 9), (point.pos.y - 9), 18, 18);
+  });
 }
 
 function drawAsteroidLines() {
   asteroidLines.forEach((asteroidLine) => {
     splitPointsIntoLines(asteroidLine.points).forEach((line) => {
-      drawAsteroidLine(line.a, line.b);
+      drawAsteroidLine(line.a, line.b, asteroidLine.subpoints);
     });
   });
 }
@@ -168,9 +166,14 @@ function drawShip() {
   translate(ship.x, ship.y);
   rotate(ship.orientation);
 
-  fill(color(ship.color));
-  stroke(color('#000'));
-  triangle(10, 0, -5, -5, -5, 5);
+  fill(color('#fd8700'));
+  noStroke();
+  // triangle(10, 0, -5, -5, -5, 5);
+  let xRandom = ((Math.random() * 6) - 3);
+  const yRandom = ((Math.random() * 2) - 1);
+  if (ship.planetIndex === -1) xRandom -= 50;
+  triangle(-20 + xRandom, yRandom, -13, -3, -13, 3);
+  image(images.ship, -13.7, -10, 27, 20);
 }
 
 function drawRays() {
@@ -413,12 +416,29 @@ function initChronoMeter() {
   playLevelMusic();
 }
 
+function createAsteriodPoints() {
+  asteroidLines.forEach((asteroidLine, t) => {
+    const distance = getDistance(asteroidLine.points[0].x, asteroidLine.points[0].y, asteroidLine.points[1].x, asteroidLine.points[1].y);
+    const v = 22;
+    const space = Math.floor(distance / v);
+    const delta = (distance / v) - space;
+    asteroidLines[t].subpoints = [];
+    for (let i = 0; i <= space; i += 1) {
+      const pos = getPositionAlongTheLine(asteroidLine.points[0].x, asteroidLine.points[0].y, asteroidLine.points[1].x, asteroidLine.points[1].y, ((i * v) / distance) + (delta / v));
+      pos.x += (Math.random() * 10) - 5;
+      pos.y += (Math.random() * 10) - 5;
+      asteroidLine.subpoints.push({ pos, type: Math.floor(Math.random() * 4) });
+    }
+  });
+}
+
 function setup() {
   setBackground();
   createCanvas(canvasWidth, canvasHeight);
   setInterval(compute, 10);
   playShipEngineSound();
   initChronoMeter();
+  createAsteriodPoints();
 }
 
 function draw() {
