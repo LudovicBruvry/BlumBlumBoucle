@@ -19,7 +19,7 @@ const ship = {
   speed: orbitSpeed,
   acceleration: 0,
   orientation: 0,
-  planetAngle: -Math.PI,
+  planetAngle: -Math.PI / 4,
   planetIndex: 0,
   clockwise: true,
   isDead: false,
@@ -335,6 +335,7 @@ function attachShipToNextPlanet() {
     ship.isOrbitValidated = false;
     ship.planetAngle = ship.anchorPoint.planetAngle;
     ship.clockwise = ship.anchorPoint.clockwise;
+    ship.anchorPoint.point = null;
     const planet = planets[ship.planetIndex];
     if (planet.isEnd) levelEnd();
   }
