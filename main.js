@@ -28,7 +28,6 @@ const planets = [
   { x: 300, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
   { x: 500, y: 750, size: 150, color: '#FF0', orbitDistance: 50 },
   { x: 700, y: 650, size: 150, color: '#FF0', orbitDistance: 50 },
-  { x: 600, y: 100, size: 15, color: '#FF0', orbitDistance: 50 },
 ];
 
 const orbitSpeed = 0.3;
