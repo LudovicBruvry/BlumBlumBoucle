@@ -10,7 +10,7 @@ const planets = [
   { x: 100, y: 700, size: 15, color: '#0FF', orbitDistance: 50 },
   { x: 100, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
   { x: 100, y: 100, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 450, y: 220, size: 350, color: '#FF0', orbitDistance: 50 },
+  { x: 450, y: 220, size: 350, color: 'green', orbitDistance: 50, isEnd: true },
   { x: 800, y: 50, size: 30, color: '#FF0', orbitDistance: 50 },
   { x: 1250, y: 125, size: 150, color: '#FF0', orbitDistance: 50 },
   { x: 1250, y: 400, size: 200, color: '#FF0', orbitDistance: 50 },
@@ -28,6 +28,10 @@ const planets = [
   { x: 300, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
   { x: 500, y: 750, size: 150, color: '#FF0', orbitDistance: 50 },
   { x: 700, y: 650, size: 150, color: '#FF0', orbitDistance: 50 },
+];
+
+const asteroidLines = [
+  { points: [{ x: 100, y: 500 }, { x: 400, y: 510 }, { x: 500, y: 430 }, { x: 1200, y: 600 }] },
 ];
 
 const orbitSpeed = 0.3;
@@ -55,6 +59,10 @@ function gameover() {
   ship.deadPlanetIndex = -1;
 }
 
+function levelEnd() {
+  console.log('Con grat ulation !');
+}
+
 function drawPlanet(_x, _y, _size, _color, _orbit) {
   fill(color(_color));
   noStroke();
@@ -64,6 +72,23 @@ function drawPlanet(_x, _y, _size, _color, _orbit) {
     stroke(color('#000'));
     ellipse(_x, _y, _size + _orbit, _size + _orbit);
   }
+}
+
+function drawAsteroidLine(pointA, pointB) {
+  stroke(color('black'));
+  line(pointA.x, pointA.y, pointB.x, pointB.y);
+}
+
+function drawAsteroidLines() {
+  asteroidLines.forEach((asteroidLine) => {
+    let lastPoint = asteroidLine.points[0];
+    // eslint-disable-next-line no-plusplus
+    for (let index = 1; index < asteroidLine.points.length; index++) {
+      const point = asteroidLine.points[index];
+      drawAsteroidLine(lastPoint, point);
+      lastPoint = point;
+    }
+  });
 }
 
 function drawPlanets() {
@@ -151,6 +176,13 @@ function calculateShipTrajectory() {
   let deadPlanetDistance = Infinity;
   let validOrbitDistance = Infinity;
 
+  ship.isDead = false;
+  ship.speed = spaceSpeed;
+
+  if (ship.isDead) {
+    return;
+  }
+
   planets.forEach((planet, index) => {
     const { x, y, size, orbitDistance } = planet;
 
@@ -207,7 +239,6 @@ function calculateShipTrajectory() {
   });
 
   ship.isDead = ship.isDead || !ship.isOrbitValidated;
-  ship.speed = spaceSpeed;
 }
 
 function attachShipToNextPlanet() {
@@ -225,6 +256,8 @@ function attachShipToNextPlanet() {
     ship.isOrbitValidated = false;
     ship.planetAngle = ship.anchorPoint.planetAngle;
     ship.clockwise = ship.anchorPoint.clockwise;
+    const planet = planets[ship.planetIndex];
+    if (planet.isEnd) levelEnd();
   }
 }
 
@@ -240,6 +273,7 @@ function setup() {
 
 function draw() {
   background(220);
+  drawAsteroidLines();
   drawPlanets();
   drawRays();
   drawShip();
