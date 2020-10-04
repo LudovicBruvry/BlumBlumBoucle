@@ -2,6 +2,7 @@
     "env": {
         "browser": true
     },
+    "parser": "babel-eslint",
     "extends": [
         "airbnb-base",
         "p5js"
