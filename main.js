@@ -84,9 +84,15 @@ function levelEnd() {
   console.log('Con grat ulation !');
 }
 
-function drawPlanet(_x, _y, _size, i, _orbit) {
-  const date = Math.ceil(new Date().getTime() / 100) % 30;
-  image(images[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
+function drawPlanet(_x, _y, _size, _color, i, _orbit) {
+  if (i) {
+    image(images[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
+  } else {
+    fill(color(_color));
+    noStroke();
+    ellipse(_x, _y, _size, _size);
+  }
+
   if (SHOW_ORBITS) {
     noFill();
     stroke(color('#000'));
@@ -108,8 +114,8 @@ function drawAsteroidLines() {
 }
 
 function drawPlanets() {
-  planets.forEach(({ x, y, size, image, orbitDistance }) => {
-    drawPlanet(x, y, size, image, orbitDistance);
+  planets.forEach(({ x, y, size, color, image, orbitDistance }) => {
+    drawPlanet(x, y, size, color, image, orbitDistance);
   });
 }
 
@@ -243,9 +249,6 @@ function calculateShipTrajectory() {
   ship.speed = spaceSpeed;
 
   handleAsteroidLinesTrajectory(dx, dy);
-  if (ship.isDead) {
-    return;
-  }
 
   planets.forEach((planet, index) => {
     const { x, y, size, orbitDistance } = planet;
