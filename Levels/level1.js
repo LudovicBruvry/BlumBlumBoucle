@@ -1,4 +1,4 @@
-const level = { 
+const level = {
     planets : [
     { x: 50, y: 50, size: 20, color: '#F0F', orbitDistance: 30 },
     { x: 50, y: 125, size: 20, color: '#0FF', orbitDistance: 30 },
@@ -17,21 +17,21 @@ const level = {
     { x: 500, y: 460, size: 40, color: '#0FF', orbitDistance: 50 },
     { x: 790, y: 440, size: 40, color: '#0FF', orbitDistance: 50 },
     { x: 620, y: 500, size: 40, color: '#0FF', orbitDistance: 50 },
-    
+
     { x: 740, y: 650, size: 120, color: '#0FF', orbitDistance: 50 },
     { x: 920, y: 690, size: 30, color: '#0FF', orbitDistance: 50 },
     { x: 1300, y: 680, size: 80, color: '#0FF', orbitDistance: 50 },
     { x: 1100, y: 660, size: 80, color: '#0FF', orbitDistance: 50 },
 
-    { x: 1500, y: 700, size: 35, color: '#FF0', orbitDistance: 50 },
+    { x: 1500, y: 700, size: 35, color: '#FF0', orbitDistance: 50, isEnd: true },
     ],
     background : 'Assets/Sprites/Fond5.png',
     music : 'Assets/Music/LEVEL1_2.mp3',
     asteroidLines : [
         { points: [
-            { x: 100, y: 500 }, 
-            { x: 400, y: 510 }, 
-            { x: 500, y: 430 }, 
+            { x: 100, y: 500 },
+            { x: 400, y: 510 },
+            { x: 500, y: 430 },
             { x: 1200, y: 600 }
         ] },
       ],
