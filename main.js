@@ -167,10 +167,17 @@ function moveShipInSpace() {
   ship.x += dx;
   ship.y += dy;
 
+  if (ship.deadPlanetIndex > -1) {
+    deadPlanetDistance = parseInt(getDistance(ship.x, ship.y, deadPlanet.x, deadPlanet.y), 10);
+    if (deadPlanetDistance < deadPlanet.size / 2) gameover();
+  }
+  if (ship.deadPoint !== null) {
+    deadPointDistance = parseInt(getDistance(ship.x, ship.y, ship.deadPoint.x, ship.deadPoint.y), 10);
+    if (deadPointDistance < ship.speed) gameover();
+  }
+
   if (ship.x < 0 || ship.x > canvasWidth) gameover();
   if (ship.y < 0 || ship.y > canvasWidth) gameover();
-  if (ship.deadPlanetIndex > -1 && deadPlanetDistance < deadPlanet.size / 2) gameover();
-  if (deadPointDistance < 1) gameover();
 }
 
 function moveShipInOrbit() {
