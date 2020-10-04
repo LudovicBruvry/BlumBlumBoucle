@@ -1,4 +1,5 @@
-const planets = [
+const level = {
+    planets : [
     { x: 100, y: 450, size: 15, color: '#F0F', orbitDistance: 50 },
     { x: 100, y: 575, size: 15, color: '#0FF', orbitDistance: 50 },
     { x: 100, y: 700, size: 15, color: '#0FF', orbitDistance: 50 },
@@ -22,8 +23,17 @@ const planets = [
     { x: 300, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
     { x: 500, y: 750, size: 150, color: '#FF0', orbitDistance: 50 },
     { x: 700, y: 650, size: 150, color: '#FF0', orbitDistance: 50 },
-  
-  
-  ];
+    ],
+    background : 'Assets/Sprites/Fond6.png',
+    music : 'Assets/Music/LEVEL2.mp3',
+    asteroidLines : [
+        { points: [
+            { x: 100, y: 500 }, 
+            { x: 400, y: 510 }, 
+            { x: 500, y: 430 }, 
+            { x: 1200, y: 600 }
+        ] },
+    ],
+};
 
-  export {planets}
+export {level1}
