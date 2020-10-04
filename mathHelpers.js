@@ -141,6 +141,7 @@ function getCorrectLineBetween2Lines(line1, line2, initialSens, isUpDownOrEqual)
   let lineDown = line2;
   let lineMedium = initialSens === 1 ? lineDown : lineUp;
   var lineLimit = initialSens === 1 ? lineUp : lineDown;
+  var maxIteration = 15;
 
   do {
     if (sens === 1) lineDown = lineMedium; // Move Up
@@ -151,8 +152,9 @@ function getCorrectLineBetween2Lines(line1, line2, initialSens, isUpDownOrEqual)
       b: getMediumPoint(lineUp.b, lineDown.b),
     };
     sens = isUpDownOrEqual(lineMedium);
+    maxIteration-=1;
   }
-  while (sens !== 0 || IsSameLine(lineLimit, lineMedium, 2));
+  while (maxIteration > 0 && sens !== 0 && IsSameLine(lineLimit, lineMedium, 2));
 
   return lineMedium;
 }
