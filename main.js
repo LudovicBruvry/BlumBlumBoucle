@@ -9,9 +9,11 @@ let chronoStart = null;
 let chronoCurrent = null;
 let chronoEnd = null;
 let isChronoEnded = false;
+let timeToFinishLevel = 0;
 
 const level = window.level;
 let planets = level.planets;
+let levelNumber = level.levelNumber;
 let asteroidLines = level.asteroidLines;
 let levelMusicPath = level.music;
 let levelBackground = 220;
@@ -91,7 +93,9 @@ function levelEnd() {
   chronoEnd = Date.now();
   let diff = chronoEnd - chronoStart;
   const dateDiff = new Date(diff);
-  let seconds = convertTimeDiff(diff);
+  timeToFinishLevel = convertTimeDiff(diff);
+  displayLevelEndModal();
+
 }
 
 function displayChrono() {
@@ -387,6 +391,7 @@ function setup() {
   setInterval(compute, 10);
   playShipEngineSound();
   initChronoMeter();
+  playLevelMusic();
 }
 
 function initChronoMeter(){
@@ -394,7 +399,6 @@ function initChronoMeter(){
   chronoCurrent = Date.now();
   chronoEnd = Date.now();
   isChronoEnded = false;
-  playLevelMusic();
 }
 
 function setBackground() {
@@ -411,9 +415,85 @@ function draw() {
 }
 
 function keyPressed() {
-  calculateShipTrajectory();
-  playBoost();
-  ship.planetIndex = -1;
+  if(!isChronoEnded){
+    calculateShipTrajectory();
+    playBoost();
+    ship.planetIndex = -1;
+  }
+
+}
+
+function displayLevelEndModal(){
+  let levelEndModalElement = document.getElementById("levelEndModal");
+  if(levelEndModalElement){
+    levelEndModalElement.classList.remove("invisible");
+  }
+}
+
+function tryToGoToNextLevel(){
+  const playerNameIsValid = checkPlayerName();
+  if(playerNameIsValid){
+    const playerNameInput = document.getElementById("playerNameInput");
+
+    postHighScoresViaAPI(levelNumber, playerNameInput.value, timeToFinishLevel).then(data => {
+      if(levelNumber == 2){
+        goToCrew();
+      }else{
+        goToNextLevel(levelNumber+1)
+      }
+
+		});
+  }
+}
+
+function goToNextLevel(levelToLoad){
+
+  switch(levelToLoad){
+    case 1:
+      document.location.href='/game-level1.html';
+      break;
+    case 2:
+      document.location.href='/game-level2.html';
+      break;
+    default:
+      goToCredits();
+      break;
+  }
+}
+
+function goToCredits(){
+  document.location.href='/thecrew.html';
+}
+
+function checkPlayerName(){
+  let playerNameInput = document.getElementById("playerNameInput");
+  if(playerNameInput){
+    if(playerNameInput.value){
+      return true;
+    }
+  }
+  return false;
+}
+
+function postHighScoresViaAPI(level, playerName, time) {
+
+  return new Promise((resolve, reject) => {
+
+    var request = new XMLHttpRequest();
+
+    request.open('POST', 'https://scoreback.herokuapp.com', true);
+    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    request.onload = () => {
+      if(request.status >= 200 && request.status < 300) {
+        resolve(request.response);
+      }
+      else
+      {
+        reject('Error');
+      }
+    }
+    request.send("level="+level+"&playerName="+ playerName+"&time="+time);
+  });
 }
 
 window.setup = setup;
@@ -421,3 +501,5 @@ window.draw = draw;
 window.keyPressed = keyPressed;
 window.preload = preload;
 window.touchStarted = touchStarted;
+
+window.tryToGoToNextLevel = tryToGoToNextLevel;

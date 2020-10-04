@@ -3,9 +3,11 @@
 }
 html,
 body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
+
+  font-family: 'Press Start 2p';
+  width: 100%;
+  height: 100%;
+  margin: 0;
 }
 
 #bottomGrid{
@@ -46,14 +48,13 @@ body {
 }
 
 .button {
-	font-family: 'Press Start 2p';
   text-align: center;
-
   padding: 4px 15px 4px 15px;
   margin: 0 5px 0 5px;
   font-weight: bold;
   background-color: lightgray;
   text-shadow: -1px -1px black, 1px 1px white;
+  background-color: lightgray;
   color: darkgray;
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
@@ -68,4 +69,98 @@ body {
 	box-shadow: none;
 	position: relative;
 	top: .2em;
+}
+
+#levelEndModal{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 60px 120px;
+  padding: 4px ;
+  background-color: darkgrey;
+  text-shadow: -1px -1px black, 1px 1px white;
+  color: lightgray;
+  -webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	-o-border-radius: 7px;
+	border-radius: 7px;
+  box-shadow: 0 .2em gray;
+}
+
+#levelEndModal .title{
+  font-size: 24pt;
+  text-align: center;
+  margin-top: 15px;
+}
+
+#levelEndModal .subtitle{
+  font-size: 18pt;
+  text-align: center;
+  margin-top: 150px;
+}
+
+#levelEndModal .chronoEnd{
+  font-size: 26pt;
+  text-align: center;
+  margin-top: 25px;
+  color: white;
+}
+
+#levelEndModal .input-title{
+  font-size: 18pt;
+  text-align: center;
+  margin-top: 125px;
+}
+
+#levelEndModal .error-message{
+  font-size: 18pt;
+  text-align: center;
+  color: darkred;
+  margin-top: 125px;
+}
+
+
+#levelEndModal .button-list{
+  margin-bottom: 45px;
+  font-size: 20pt;
+}
+
+
+#levelEndModal input{
+
+  font-family: 'Press Start 2p';
+  font-size: 14pt;
+  text-align: center;
+  padding: 4px 15px 4px 15px;
+  margin: 25px 5px 0 5px;
+  font-weight: bold;
+  background-color: lightgray;
+  text-shadow: -1px -1px black, 1px 1px white;
+  color: darkgray;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -o-border-radius: 7px;
+  border-radius: 7px;
+  box-shadow: 0 .2em gray;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  width: 60%;
+
+}
+
+#levelEndModal input:focus{
+  outline: none;
+}
+
+.invisible {
+  display: none !important;
 }

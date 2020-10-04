@@ -9,6 +9,22 @@
     <title>Document</title>
 </head>
 <body>
+
+  <div id="levelEndModal" class="invisible">
+    <div class="title">CONGRATULATION !</div>
+    <div class="subtitle">You have finished this level in</div>
+    <div class="chronoEnd">15 Seconds</div>
+    <div class="input-title">Your name</div>
+    <input type="text" id="playerNameInput" name="playerName" required minlength="3" maxlength="12" size="10">
+
+    <div class="error-message invisible">You must have to enter a playername to continue !</div>
+    <div class="button-list">
+      <div id="button-quit" class="button button-quit-inactive" onclick="document.location.reload(true);">QUIT</div>
+      <div id="button-nextLevel" class="button button-nextLevel-inactive" onclick="tryToGoToNextLevel()">GO TO NEXT LEVEL</div>
+    </div>
+  </div>
+
+
   <div id="bottomGrid">
     <div id="chrono-container">
       <div id="chrono">0</div>
