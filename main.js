@@ -1,34 +1,10 @@
 // eslint-disable-next-line import/extensions
 import { getDistance, findCircleLineIntersections, intersects, getOrbitAngle } from './mathHelpers.js';
+import { level_1 as planets } from './Levels/level_1.js';
 
 const SHOW_ORBITS = true;
 const canvasWidth = 1920;
 const canvasHeight = 933;
-const planets = [
-  { x: 100, y: 450, size: 15, color: '#F0F', orbitDistance: 50 },
-  { x: 100, y: 575, size: 15, color: '#0FF', orbitDistance: 50 },
-  { x: 100, y: 700, size: 15, color: '#0FF', orbitDistance: 50 },
-  { x: 100, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 100, y: 100, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 450, y: 220, size: 350, color: 'green', orbitDistance: 50, isEnd: true },
-  { x: 800, y: 50, size: 30, color: '#FF0', orbitDistance: 50 },
-  { x: 1250, y: 125, size: 150, color: '#FF0', orbitDistance: 50 },
-  { x: 1250, y: 400, size: 200, color: '#FF0', orbitDistance: 50 },
-  { x: 775, y: 350, size: 200, color: '#FF0', orbitDistance: 50 },
-  { x: 1800, y: 75, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1800, y: 200, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1800, y: 325, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1850, y: 450, size: 15, color: '#F0F', orbitDistance: 50 },
-  { x: 1825, y: 825, size: 60, color: '#FF0', orbitDistance: 50 },
-  { x: 1600, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1450, y: 700, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1300, y: 575, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 900, y: 575, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 500, y: 500, size: 10, color: '#FF0', orbitDistance: 30 },
-  { x: 300, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 500, y: 750, size: 150, color: '#FF0', orbitDistance: 50 },
-  { x: 700, y: 650, size: 150, color: '#FF0', orbitDistance: 50 },
-];
 
 const asteroidLines = [
   { points: [{ x: 100, y: 500 }, { x: 400, y: 510 }, { x: 500, y: 430 }, { x: 1200, y: 600 }] },
@@ -63,6 +39,22 @@ function preload() {
   boostSound = loadSound('./Assets/Sound/Boost.mp3');
   explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
   explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
+}
+
+function playExplosion() {
+  getAudioContext().resume();
+  explodeSound2.setVolume(0.3);
+  explodeSound2.play();
+}
+
+function playBoost() {
+  getAudioContext().resume();
+  boostSound.setVolume(0.1);
+  boostSound.play();
+}
+
+function touchStarted() {
+  getAudioContext().resume();
 }
 
 function gameover() {
@@ -279,33 +271,16 @@ function compute() {
   attachShipToNextPlanet();
 }
 
-function setup() {
-  createCanvas(canvasWidth, canvasHeight);
-  setInterval(compute, 10);
-  playShipEngineSound();
-}
-
-function playShipEngineSound(){
-  getAudioContext().resume(); 
+function playShipEngineSound() {
+  getAudioContext().resume();
   shipEngineSound.setVolume(0.08);
   shipEngineSound.loop();
 }
 
-function playExplosion(){
-  getAudioContext().resume(); 
-  explodeSound2.setVolume(0.3);
-  explodeSound2.play();
-}
-
-function playBoost(){
-  getAudioContext().resume(); 
-  boostSound.setVolume(0.1);
-  boostSound.play();
-}
-
-
-function touchStarted() {
-  getAudioContext().resume();
+function setup() {
+  createCanvas(canvasWidth, canvasHeight);
+  setInterval(compute, 10);
+  playShipEngineSound();
 }
 
 function draw() {
@@ -317,7 +292,6 @@ function draw() {
 }
 
 function keyPressed() {
-
   calculateShipTrajectory();
   playBoost();
   ship.planetIndex = -1;
