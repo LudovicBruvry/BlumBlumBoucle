@@ -7,19 +7,19 @@ function getDistance(xA, yA, xB, yB) {
 
 function isPointInLine(point, line) {
   return (
-      ((point.x >= line.a.x || point.x <= line.b.x)
-      && (point.y >= line.a.y || point.y <= line.b.y))
+      ((point.x >= line.a.x && point.x <= line.b.x)
+      && (point.y >= line.a.y && point.y <= line.b.y))
       ||
-      ((point.x >= line.b.x || point.x <= line.a.x)
-      && (point.y >= line.b.y || point.y <= line.a.y))
+      ((point.x >= line.b.x && point.x <= line.a.x)
+      && (point.y >= line.b.y && point.y <= line.a.y))
   );
 }
 
 function findCircleLinePointsIntersections(r, x, y, pointA, pointB) {
   const m = (pointA.y - pointB.y) / (pointA.x - pointB.x);
   const n = pointA.y - (m * pointA.x);
-  var result = findCircleLineIntersections(r, x, y, m, n)
-    .filter(point => isPointInLine(point, { a: pointA, b: pointB }));
+  let result = findCircleLineIntersections(r, x, y, m, n);
+  result = result.filter(point => isPointInLine(point, { a: pointA, b: pointB }));
   return result;
 }
 

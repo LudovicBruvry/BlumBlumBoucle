@@ -19,7 +19,7 @@ const ship = {
   speed: orbitSpeed,
   acceleration: 0,
   orientation: 0,
-  planetAngle: -2,
+  planetAngle: .7,
   planetIndex: 0,
   clockwise: true,
   isDead: false,
