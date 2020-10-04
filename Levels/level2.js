@@ -27,7 +27,7 @@ const level = {
   ],
   background: './Assets/Sprites/Fond6.jpg',
   music: './Assets/Music/LEVEL2.mp3',
-  levelNumber: 1,
+  levelNumber: 2,
   asteroidLines: [
     {
       points: [
