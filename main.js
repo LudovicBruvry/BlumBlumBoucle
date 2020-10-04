@@ -2,7 +2,6 @@
 import { getDistance, findCircleLineIntersections, intersects, getOrbitAngle } from './mathHelpers.js';
 
 const SHOW_ORBITS = true;
-const SHOW_RAYS = true;
 const canvasWidth = 1920;
 const canvasHeight = 933;
 const planets = [
@@ -29,8 +28,8 @@ const planets = [
   { x: 300, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
   { x: 500, y: 750, size: 150, color: '#FF0', orbitDistance: 50 },
   { x: 700, y: 650, size: 150, color: '#FF0', orbitDistance: 50 },
-
-
+  { x: 375, y: 200, size: 350, color: '#FF0', orbitDistance: 50 },
+  { x: 600, y: 100, size: 15, color: '#FF0', orbitDistance: 50 },
 ];
 
 const orbitSpeed = 1;
@@ -88,53 +87,6 @@ function drawShip() {
 function drawRays() {
   ship.color = 'white';
   if (ship.planetIndex < 0) return;
-  resetMatrix();
-
-  planets.forEach(({ x, y, size, orbitDistance }, index) => {
-    if (index === ship.planetIndex) {
-      return; // No need to draw raysfor the beetween the planet where the ship is
-    }
-    const r = (size + orbitDistance + orbitDistance) / 2;
-    const r2 = size / 2;
-    const im = (y - ship.y) / (x - ship.x);
-    const m = -1 / im;
-    const n = y - (m * x);
-    const ptsOuterOrbit = findCircleLineIntersections(r, x, y, m, n);
-    const ptsInnerCircle = findCircleLineIntersections(r2, x, y, m, n);
-    const dx = ship.x + (1000 * cos(ship.orientation));
-    const dy = ship.y + (1000 * sin(ship.orientation));
-
-    // SUCCES
-    const isIntersectingWithRightCirclePoint = intersects(ptsOuterOrbit[0].x, ptsOuterOrbit[0].y, ptsInnerCircle[0].x, ptsInnerCircle[0].y, ship.x, ship.y, dx, dy);
-    if (isIntersectingWithRightCirclePoint) stroke(color('blue'));
-    if (SHOW_RAYS) {
-      stroke(color('#AAA'));
-      line(ptsOuterOrbit[0].x, ptsOuterOrbit[0].y, ptsInnerCircle[0].x, ptsInnerCircle[0].y);
-    }
-
-    const isIntersectingWithLeftCirclePoint = intersects(ptsOuterOrbit[1].x, ptsOuterOrbit[1].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
-    if (isIntersectingWithLeftCirclePoint) stroke(color('#0F0'));
-    if (SHOW_RAYS) {
-      stroke(color('#AAA'));
-      line(ptsOuterOrbit[1].x, ptsOuterOrbit[1].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y);
-    }
-
-    // MORT
-    const isIntersectingWithPlanet = intersects(ptsInnerCircle[0].x, ptsInnerCircle[0].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
-    if (isIntersectingWithPlanet) stroke(color('#F00'));
-    if (SHOW_RAYS) {
-      stroke(color('#AAA'));
-      line(ptsInnerCircle[0].x, ptsInnerCircle[0].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y);
-    }
-
-    if (isIntersectingWithPlanet) {
-      ship.color = 'red';
-    } else if (isIntersectingWithRightCirclePoint || isIntersectingWithLeftCirclePoint) {
-      ship.color = 'green';
-    } else {
-      ship.color = 'white';
-    }
-  });
 
   resetMatrix();
   stroke(color(ship.color));
@@ -155,12 +107,17 @@ function moveShipInSpace() {
   ship.x += dx;
   ship.y += dy;
 
-  if (ship.x < 0 || ship.x > canvasWidth) gameover();
-  if (ship.y < 0 || ship.y > canvasWidth) gameover();
+  if (ship.x < 0 || ship.x > canvasWidth) {
+    gameover();
+  }
+  if (ship.y < 0 || ship.y > canvasWidth) {
+    gameover();
+  }
+
   if (ship.deadPlanetIndex > -1) {
     const deadPlanet = planets[ship.deadPlanetIndex];
     const distanceBetweenShipAndPlanet = getDistance(ship.x, ship.y, deadPlanet.x, deadPlanet.y);
-    if (distanceBetweenShipAndPlanet < deadPlanet.size) gameover();
+    if (distanceBetweenShipAndPlanet < deadPlanet.size / 2) gameover();
   }
 }
 
@@ -188,6 +145,7 @@ function moveShip() {
 
 function calculateShipTrajectory() {
   const planetOrigin = planets[ship.planetIndex];
+  let deadPlanetDistance = 999999;
 
   planets.forEach((planet, index) => {
     const { x, y, size, orbitDistance } = planet;
@@ -214,7 +172,11 @@ function calculateShipTrajectory() {
     const isIntersectingWithPlanet = intersects(ptsInnerCircle[0].x, ptsInnerCircle[0].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
 
     if (isIntersectingWithPlanet) {
-      ship.deadPlanetIndex = index;
+      const distance = getDistance(ship.x, ship.y, planet.x, planet.y);
+      if (distance < deadPlanetDistance) {
+        deadPlanetDistance = distance;
+        ship.deadPlanetIndex = index;
+      }
     }
 
     if (isIntersectingWithRightCirclePoint || isIntersectingWithLeftCirclePoint) {
@@ -240,9 +202,6 @@ function calculateShipTrajectory() {
   });
 
   ship.isDead = ship.isDead || !ship.isOrbitValidated;
-  if (ship.isDead) {
-    gameover();
-  }
   ship.speed = spaceSpeed;
 }
 
