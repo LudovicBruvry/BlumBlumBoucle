@@ -2,9 +2,11 @@
     "env": {
         "browser": true
     },
+    "parser": "babel-eslint",
     "extends": [
         "airbnb-base",
-        "p5js"
+        "p5js",
+        "p5js/sound"
     ],
     "rules": {
         "object-curly-newline": "off",

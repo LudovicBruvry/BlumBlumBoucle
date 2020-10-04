@@ -4,35 +4,12 @@ import { getDistance, findCircleLineIntersections, intersects, getOrbitAngle, fi
 const SHOW_ORBITS = true;
 const canvasWidth = 1920;
 const canvasHeight = 933;
-const planets = [
-  { x: 100, y: 450, size: 15, color: '#F0F', orbitDistance: 50 },
-  { x: 100, y: 575, size: 15, color: '#0FF', orbitDistance: 50 },
-  { x: 100, y: 700, size: 15, color: '#0FF', orbitDistance: 50 },
-  { x: 100, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 100, y: 100, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 450, y: 220, size: 350, color: 'green', orbitDistance: 50, isEnd: true },
-  { x: 800, y: 50, size: 30, color: '#FF0', orbitDistance: 50 },
-  { x: 1250, y: 125, size: 150, color: '#FF0', orbitDistance: 50 },
-  { x: 1250, y: 400, size: 200, color: '#FF0', orbitDistance: 50 },
-  { x: 775, y: 350, size: 200, color: '#FF0', orbitDistance: 50 },
-  { x: 1800, y: 75, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1800, y: 200, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1800, y: 325, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1850, y: 450, size: 15, color: '#F0F', orbitDistance: 50 },
-  { x: 1825, y: 825, size: 60, color: '#FF0', orbitDistance: 50 },
-  { x: 1600, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1450, y: 700, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 1300, y: 575, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 900, y: 575, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 500, y: 500, size: 10, color: '#FF0', orbitDistance: 30 },
-  { x: 300, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
-  { x: 500, y: 750, size: 150, color: '#FF0', orbitDistance: 50 },
-  { x: 700, y: 650, size: 150, color: '#FF0', orbitDistance: 50 },
-];
 
-const asteroidLines = [
-  { points: [{ x: 100, y: 500 }, { x: 400, y: 510 }, { x: 500, y: 430 }, { x: 1200, y: 600 }] },
-];
+const level = window.level;
+let planets = level.planets;
+let asteroidLines = level.asteroidLines;
+let levelMusicPath = level.music;
+let levelBackground = 220;
 
 const orbitSpeed = 0.3;
 const spaceSpeed = 8;
@@ -63,12 +40,30 @@ let shipEngineSound;
 let boostSound;
 let explodeSound1;
 let explodeSound2;
+let levelMusic;
 
 function preload() {
   shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
-  boostSound = loadSound('./Assets/Sound/Boost.mp3');
+  levelMusic = loadSound(levelMusicPath);
+  boostSound = loadSound('./Assets/Sound/boost3.wav');
   explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
   explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
+}
+
+function playExplosion() {
+  getAudioContext().resume();
+  explodeSound2.setVolume(0.3);
+  explodeSound2.play();
+}
+
+function playBoost() {
+  getAudioContext().resume();
+  boostSound.setVolume(0.1);
+  boostSound.play();
+}
+
+function touchStarted() {
+  getAudioContext().resume();
 }
 
 function gameover() {
@@ -328,37 +323,32 @@ function compute() {
   attachShipToNextPlanet();
 }
 
-function setup() {
-  createCanvas(canvasWidth, canvasHeight);
-  setInterval(compute, 10);
-  playShipEngineSound();
-}
-
 function playShipEngineSound() {
   getAudioContext().resume();
   shipEngineSound.setVolume(0.08);
   shipEngineSound.loop();
 }
 
-function playExplosion() {
+function playLevelMusic() {
   getAudioContext().resume();
-  explodeSound2.setVolume(0.3);
-  explodeSound2.play();
+  levelMusic.setVolume(0.5);
+  levelMusic.loop();
 }
 
-function playBoost() {
-  getAudioContext().resume();
-  boostSound.setVolume(0.1);
-  boostSound.play();
+function setup() {
+  setBackground();
+  createCanvas(canvasWidth, canvasHeight);
+  setInterval(compute, 10);
+  playShipEngineSound();
+  playLevelMusic();
 }
 
-
-function touchStarted() {
-  getAudioContext().resume();
+function setBackground() {
+  levelBackground = loadImage(level.background);
 }
 
 function draw() {
-  background(220);
+  background(levelBackground);
   drawAsteroidLines();
   drawPlanets();
   drawRays();
@@ -366,7 +356,6 @@ function draw() {
 }
 
 function keyPressed() {
-
   calculateShipTrajectory();
   playBoost();
   ship.planetIndex = -1;

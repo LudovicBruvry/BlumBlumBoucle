@@ -23,7 +23,8 @@ h1 {
 .menuHidden{
 	display:none;
 }
-#preMenu .bouton-list, #homeMenu .bouton-list {
+
+#preMenu .bouton-list, #homeMenu .bouton-list, #levelSelectionMenu .bouton-list {
     position:absolute;
 	text-align:center;
     left: 50%;
@@ -124,4 +125,8 @@ h1 {
 #crewContainer {
 	text-align: center;
 	margin-bottom : 20px;
+}
+
+#p5_loading {
+	opacity: 0;
 }

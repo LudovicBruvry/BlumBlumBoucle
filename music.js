@@ -1,8 +1,8 @@
 let song;
 
 function preload() {
-    song = loadSound('./Assets/Music/menu.mp3');
-    getAudioContext().resume();
+  song = loadSound('./Assets/Music/menu.mp3');
+  getAudioContext().resume();
 }
 
 function touchStarted() {
@@ -11,7 +11,7 @@ function touchStarted() {
 
 function setup() {
   createCanvas(0, 0);
-  getAudioContext().resume(); 
+  getAudioContext().resume();
   song.setVolume(0.4);
   song.loop();
 }
