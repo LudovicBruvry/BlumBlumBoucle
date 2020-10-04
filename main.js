@@ -71,6 +71,12 @@ function preload() {
       loadImage('./Assets/Sprites/Orange2.png'),
       loadImage('./Assets/Sprites/Verte2.png'),
     ],
+    rocks: [
+      loadImage('./Assets/Sprites/Rock1.png'),
+      loadImage('./Assets/Sprites/Rock2.png'),
+      loadImage('./Assets/Sprites/Rock3.png'),
+      loadImage('./Assets/Sprites/Rock4.png'),
+    ]
   };
 }
 
@@ -134,10 +140,17 @@ function drawPlanet(_x, _y, _size, _color, i, _orbit) {
     ellipse(_x, _y, _size + _orbit, _size + _orbit);
   }
 }
+function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
+  return { x: x1 * (1.0 - percentage) + x2 * percentage, y: y1 * (1.0 - percentage) + y2 * percentage };
+}
 
 function drawAsteroidLine(pointA, pointB) {
   stroke(color('black'));
   line(pointA.x, pointA.y, pointB.x, pointB.y);
+  for (let i = 0; i <= 100; i += 10) {
+    let pos = getPositionAlongTheLine(pointA.x, pointA.y, pointB.x, pointB.y, i / 100);
+    image(images.rocks[0], pos.x - 9, pos.y - 9, 18, 18);
+  }
 }
 
 function drawAsteroidLines() {
