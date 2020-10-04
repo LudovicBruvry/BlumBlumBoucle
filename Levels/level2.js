@@ -28,12 +28,12 @@ const level = {
     music : 'Assets/Music/LEVEL2.mp3',
     asteroidLines : [
         { points: [
-            { x: 100, y: 500 }, 
-            { x: 400, y: 510 }, 
-            { x: 500, y: 430 }, 
+            { x: 100, y: 500 },
+            { x: 400, y: 510 },
+            { x: 500, y: 430 },
             { x: 1200, y: 600 }
         ] },
     ],
 };
 
-export {level1}
+export {level}

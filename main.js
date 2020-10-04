@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/extensions
 import { getDistance, findCircleLineIntersections, intersects, getOrbitAngle } from './mathHelpers.js';
-import { level } from './Levels/level1.js';
 
 const SHOW_ORBITS = true;
 const canvasWidth = 1920;
@@ -9,7 +8,7 @@ const canvasHeight = 933;
 const asteroidLines = [
   { points: [{ x: 100, y: 500 }, { x: 400, y: 510 }, { x: 500, y: 430 }, { x: 1200, y: 600 }] },
 ];
-
+const level = window.level;
 let planets = level.planets;
 
 const orbitSpeed = 0.3;
