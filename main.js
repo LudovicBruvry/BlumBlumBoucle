@@ -78,6 +78,7 @@ function preload() {
       loadImage('./Assets/Sprites/Rock4.png'),
     ],
     ship: loadImage('./Assets/Sprites/Ship.png'),
+    end: loadImage('./Assets/Sprites/End.png'),
   };
 }
 
@@ -133,19 +134,18 @@ function drawPlanet(_x, _y, _size, _color, i, _orbit, _isStart, _isEnd) {
 
   if (SHOW_ORBITS) {
     noFill();
-    if(_isStart) {
+    if (_isStart) {
       stroke(color('#34fa59'));
       strokeWeight(0.5);
-    }
-    else if (_isEnd) {
+    } else if (_isEnd) {
       stroke(color('#ff5c5c'));
       strokeWeight(0.5);
-    }
-    else {
+    } else {
       stroke(color('#ffffff'));
       strokeWeight(0.1);
     }
     ellipse(_x, _y, _size + _orbit, _size + _orbit);
+    if (_isEnd) image(images.end, _x - 25, _y - 100, 60, 85);
   }
 }
 function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
@@ -168,7 +168,7 @@ function drawAsteroidLines() {
 
 function drawPlanets() {
   planets.forEach(({ x, y, size, color, image, orbitDistance, isStart, isEnd }) => {
-    drawPlanet(x, y, size, color, image, orbitDistance,isStart,isEnd);
+    drawPlanet(x, y, size, color, image, orbitDistance, isStart, isEnd);
   });
 }
 
