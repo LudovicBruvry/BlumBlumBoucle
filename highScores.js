@@ -3,9 +3,10 @@ class HighScores {
   static maxLevel = 2;
 
   levelSelected = 0;
-  
+
   static display() {
-    
+
+    document.getElementById('levelSelectedText').innerHTML = 'Tutorial level';
 		this.getHighScoresAPI().then(data => {
 			this.highScores = JSON.parse(data);
 			this.displayHighScore(this.levelSelected);
@@ -19,11 +20,14 @@ class HighScores {
 			}
 		});
 		document.getElementById(menuToDisplay).classList.remove("menuHidden");
-		
-		this.levelSelected = 0;	
+
+		this.levelSelected = 0;
   }
 
   static previousLevel() {
+
+    console.log(this.levelSelected);
+
     if (this.levelSelected !== 0) {
       this.levelSelected -= 1;
       this.getHighScoresForLevel(this.levelSelected);
@@ -87,9 +91,9 @@ class HighScores {
   }
 
   static postHighScoresViaAPI(level, playerName, time) {
-		
+
 		return new Promise((resolve, reject) => {
-	
+
 			var request = new XMLHttpRequest();
 
 			request.open('POST', 'https://scoreback.herokuapp.com', true);
