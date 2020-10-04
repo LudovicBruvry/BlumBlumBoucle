@@ -122,7 +122,7 @@ function displayChrono() {
     document.getElementById('chrono').innerHTML = `${seconds}`;
   }
 }
-function drawPlanet(_x, _y, _size, _color, i, _orbit) {
+function drawPlanet(_x, _y, _size, _color, i, _orbit, _isStart, _isEnd) {
   if (i !== null) {
     image(images.planets[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
   } else {
@@ -133,8 +133,18 @@ function drawPlanet(_x, _y, _size, _color, i, _orbit) {
 
   if (SHOW_ORBITS) {
     noFill();
-    stroke(color('#ffffff'));
-    strokeWeight(0.1);
+    if(_isStart) {
+      stroke(color('#34fa59'));
+      strokeWeight(0.5);
+    }
+    else if (_isEnd) {
+      stroke(color('#ff5c5c'));
+      strokeWeight(0.5);
+    }
+    else {
+      stroke(color('#ffffff'));
+      strokeWeight(0.1);
+    }
     ellipse(_x, _y, _size + _orbit, _size + _orbit);
   }
 }
@@ -157,8 +167,8 @@ function drawAsteroidLines() {
 }
 
 function drawPlanets() {
-  planets.forEach(({ x, y, size, color, image, orbitDistance }) => {
-    drawPlanet(x, y, size, color, image, orbitDistance);
+  planets.forEach(({ x, y, size, color, image, orbitDistance, isStart, isEnd }) => {
+    drawPlanet(x, y, size, color, image, orbitDistance,isStart,isEnd);
   });
 }
 
