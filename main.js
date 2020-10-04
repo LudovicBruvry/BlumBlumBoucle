@@ -10,10 +10,10 @@ let chronoCurrent = null;
 let chronoEnd = null;
 let isChronoEnded = false;
 
-const level = window.level;
-let planets = level.planets;
-let asteroidLines = level.asteroidLines;
-let levelMusicPath = level.music;
+const { level } = window;
+const { planets } = level;
+const { asteroidLines } = level;
+const levelMusicPath = level.music;
 let levelBackground = 220;
 
 const orbitSpeed = 0.3;
@@ -44,7 +44,6 @@ let usedSensForTrajectory = 1; // 1->up, 0->isOk, -1->down
 
 let shipEngineSound;
 let boostSound;
-let explodeSound1;
 let explodeSound2;
 let levelMusic;
 let images;
@@ -53,12 +52,25 @@ function preload() {
   shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
   levelMusic = loadSound(levelMusicPath);
   boostSound = loadSound('./Assets/Sound/boost3.wav');
-  explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
   explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
   images = {
     crateres: loadImage('./Assets/Sprites/Crateres/c0.png'),
     earth: loadImage('./Assets/Sprites/Earth/PE001.png'),
     saumon: loadImage('./Assets/Sprites/Saumon/S01.png'),
+    planets: [
+      loadImage('./Assets/Sprites/Beige.png'),
+      loadImage('./Assets/Sprites/Bleue.png'),
+      loadImage('./Assets/Sprites/Jaune.png'),
+      loadImage('./Assets/Sprites/Noire.png'),
+      loadImage('./Assets/Sprites/Orange.png'),
+      loadImage('./Assets/Sprites/Rouge.png'),
+      loadImage('./Assets/Sprites/Verte.png'),
+      loadImage('./Assets/Sprites/Bleue2.png'),
+      loadImage('./Assets/Sprites/Bleue3.png'),
+      loadImage('./Assets/Sprites/Rose.png'),
+      loadImage('./Assets/Sprites/Orange2.png'),
+      loadImage('./Assets/Sprites/Verte2.png'),
+    ],
   };
 }
 
@@ -86,31 +98,30 @@ function gameover() {
   playExplosion();
 }
 
-function levelEnd() {
-  isChronoEnded = true;
-  chronoEnd = Date.now();
-  let diff = chronoEnd - chronoStart;
-  const dateDiff = new Date(diff);
-  let seconds = convertTimeDiff(diff);
-}
-
-function displayChrono() {
-  if(!isChronoEnded){
-    chronoCurrent = Date.now();
-    const diff = chronoCurrent - chronoStart;
-    let seconds = convertTimeDiff(diff);
-    document.getElementById("chrono").innerHTML= '' + seconds;
-  }
-}
-
-function convertTimeDiff(diff){
+function convertTimeDiff(diff) {
   const dateDiff = new Date(diff);
   return (dateDiff.getSeconds() + 60 * dateDiff.getMinutes());
 }
 
+// function levelEnd() {
+//   isChronoEnded = true;
+//   chronoEnd = Date.now();
+//   const diff = chronoEnd - chronoStart;
+//   const dateDiff = new Date(diff);
+//   const seconds = convertTimeDiff(diff);
+// }
+
+function displayChrono() {
+  if (!isChronoEnded) {
+    chronoCurrent = Date.now();
+    const diff = chronoCurrent - chronoStart;
+    const seconds = convertTimeDiff(diff);
+    document.getElementById('chrono').innerHTML = `${seconds}`;
+  }
+}
 function drawPlanet(_x, _y, _size, _color, i, _orbit) {
-  if (i) {
-    image(images[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
+  if (i !== null) {
+    image(images.planets[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
   } else {
     fill(color(_color));
     noStroke();
@@ -131,7 +142,7 @@ function drawAsteroidLine(pointA, pointB) {
 
 function drawAsteroidLines() {
   asteroidLines.forEach((asteroidLine) => {
-    splitPointsIntoLines(asteroidLine.points).forEach(line => {
+    splitPointsIntoLines(asteroidLine.points).forEach((line) => {
       drawAsteroidLine(line.a, line.b);
     });
   });
@@ -381,15 +392,11 @@ function playLevelMusic() {
   levelMusic.loop();
 }
 
-function setup() {
-  setBackground();
-  createCanvas(canvasWidth, canvasHeight);
-  setInterval(compute, 10);
-  playShipEngineSound();
-  initChronoMeter();
+function setBackground() {
+  levelBackground = loadImage(level.background);
 }
 
-function initChronoMeter(){
+function initChronoMeter() {
   chronoStart = Date.now();
   chronoCurrent = Date.now();
   chronoEnd = Date.now();
@@ -397,8 +404,12 @@ function initChronoMeter(){
   playLevelMusic();
 }
 
-function setBackground() {
-  levelBackground = loadImage(level.background);
+function setup() {
+  setBackground();
+  createCanvas(canvasWidth, canvasHeight);
+  setInterval(compute, 10);
+  playShipEngineSound();
+  initChronoMeter();
 }
 
 function draw() {
