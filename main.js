@@ -450,6 +450,7 @@ function setup() {
   createCanvas(canvasWidth, canvasHeight);
   setInterval(compute, 10);
   playShipEngineSound();
+  playLevelMusic();
   initChronoMeter();
   createAsteriodPoints();
 }
