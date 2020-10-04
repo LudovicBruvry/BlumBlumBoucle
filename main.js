@@ -17,6 +17,7 @@ const ship = {
   x: 400,
   y: 400,
   speed: orbitSpeed,
+  acceleration: 0,
   orientation: 0,
   planetAngle: -Math.PI,
   planetIndex: 0,
@@ -179,6 +180,11 @@ function moveShipInOrbit() {
   const dr = (size + orbitDistance) / 2;
   const dx = dr * cos(o);
   const dy = dr * sin(o);
+  if (ship.speed > orbitSpeed) {
+    ship.speed += ship.acceleration;
+    ship.acceleration += 0.0005;
+  }
+  if (ship.speed < orbitSpeed) ship.speed = orbitSpeed;
   ship.x = x + dx;
   ship.y = y + dy;
   const angularVelocity = (2 * ship.speed) / (Math.PI * dr);
@@ -247,6 +253,7 @@ function calculateShipTrajectory() {
 
   ship.isDead = false;
   ship.speed = spaceSpeed;
+  ship.acceleration = -0.1;
 
   handleAsteroidLinesTrajectory(dx, dy);
 
@@ -316,7 +323,7 @@ function attachShipToNextPlanet() {
     ship.planetIndex = ship.nextPlanetIndex;
     lastShipPlanetIndex = ship.planetIndex;
     ship.nextPlanetIndex = -1;
-    ship.speed = orbitSpeed;
+    // ship.speed = orbitSpeed;
     ship.isDead = false;
     ship.isOrbitValidated = false;
     ship.planetAngle = ship.anchorPoint.planetAngle;
