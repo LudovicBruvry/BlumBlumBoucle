@@ -10,12 +10,12 @@ let chronoCurrent = null;
 let chronoEnd = null;
 let isChronoEnded = false;
 let timeToFinishLevel = 0;
+let apiSendInAction = false;
 
-const level = window.level;
-let planets = level.planets;
-let levelNumber = level.levelNumber;
-let asteroidLines = level.asteroidLines;
-let levelMusicPath = level.music;
+const { level } = window;
+const { planets } = level;
+const { asteroidLines } = level;
+const levelMusicPath = level.music;
 let levelBackground = 220;
 
 const orbitSpeed = 0.3;
@@ -46,7 +46,6 @@ let usedSensForTrajectory = 1; // 1->up, 0->isOk, -1->down
 
 let shipEngineSound;
 let boostSound;
-let explodeSound1;
 let explodeSound2;
 let levelMusic;
 let images;
@@ -55,12 +54,32 @@ function preload() {
   shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
   levelMusic = loadSound(levelMusicPath);
   boostSound = loadSound('./Assets/Sound/boost3.wav');
-  explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
   explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
   images = {
     crateres: loadImage('./Assets/Sprites/Crateres/c0.png'),
     earth: loadImage('./Assets/Sprites/Earth/PE001.png'),
     saumon: loadImage('./Assets/Sprites/Saumon/S01.png'),
+    planets: [
+      loadImage('./Assets/Sprites/Beige.png'),
+      loadImage('./Assets/Sprites/Bleue.png'),
+      loadImage('./Assets/Sprites/Jaune.png'),
+      loadImage('./Assets/Sprites/Noire.png'),
+      loadImage('./Assets/Sprites/Orange.png'),
+      loadImage('./Assets/Sprites/Rouge.png'),
+      loadImage('./Assets/Sprites/Verte.png'),
+      loadImage('./Assets/Sprites/Bleue2.png'),
+      loadImage('./Assets/Sprites/Bleue3.png'),
+      loadImage('./Assets/Sprites/Rose.png'),
+      loadImage('./Assets/Sprites/Orange2.png'),
+      loadImage('./Assets/Sprites/Verte2.png'),
+    ],
+    rocks: [
+      loadImage('./Assets/Sprites/Rock1.png'),
+      loadImage('./Assets/Sprites/Rock2.png'),
+      loadImage('./Assets/Sprites/Rock3.png'),
+      loadImage('./Assets/Sprites/Rock4.png'),
+    ],
+    ship: loadImage('./Assets/Sprites/Ship.png'),
   };
 }
 
@@ -76,10 +95,6 @@ function playBoost() {
   boostSound.play();
 }
 
-function touchStarted() {
-  getAudioContext().resume();
-}
-
 function gameover() {
   ship.planetIndex = lastShipPlanetIndex;
   ship.speed = orbitSpeed;
@@ -91,20 +106,9 @@ function gameover() {
 function levelEnd() {
   isChronoEnded = true;
   chronoEnd = Date.now();
-  let diff = chronoEnd - chronoStart;
-  const dateDiff = new Date(diff);
+  const diff = chronoEnd - chronoStart;
   timeToFinishLevel = convertTimeDiff(diff);
   displayLevelEndModal();
-
-}
-
-function displayChrono() {
-  if(!isChronoEnded){
-    chronoCurrent = Date.now();
-    const diff = chronoCurrent - chronoStart;
-    let seconds = convertTimeDiff(diff);
-    document.getElementById("chrono").innerHTML= '' + seconds;
-  }
 }
 
 function convertTimeDiff(diff){
@@ -112,9 +116,18 @@ function convertTimeDiff(diff){
   return (dateDiff.getSeconds() + 60 * dateDiff.getMinutes());
 }
 
+
+function displayChrono() {
+  if (!isChronoEnded) {
+    chronoCurrent = Date.now();
+    const diff = chronoCurrent - chronoStart;
+    const seconds = convertTimeDiff(diff);
+    document.getElementById('chrono').innerHTML = `${seconds}`;
+  }
+}
 function drawPlanet(_x, _y, _size, _color, i, _orbit) {
-  if (i) {
-    image(images[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
+  if (i !== null) {
+    image(images.planets[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
   } else {
     fill(color(_color));
     noStroke();
@@ -123,20 +136,25 @@ function drawPlanet(_x, _y, _size, _color, i, _orbit) {
 
   if (SHOW_ORBITS) {
     noFill();
-    stroke(color('#000'));
+    stroke(color('#ffffff'));
+    strokeWeight(0.1);
     ellipse(_x, _y, _size + _orbit, _size + _orbit);
   }
 }
+function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
+  return { x: x1 * (1.0 - percentage) + x2 * percentage, y: y1 * (1.0 - percentage) + y2 * percentage };
+}
 
-function drawAsteroidLine(pointA, pointB) {
-  stroke(color('black'));
-  line(pointA.x, pointA.y, pointB.x, pointB.y);
+function drawAsteroidLine(pointA, pointB, points) {
+  points.forEach((point) => {
+    image(images.rocks[point.type], (point.pos.x - 9), (point.pos.y - 9), 18, 18);
+  });
 }
 
 function drawAsteroidLines() {
   asteroidLines.forEach((asteroidLine) => {
-    splitPointsIntoLines(asteroidLine.points).forEach(line => {
-      drawAsteroidLine(line.a, line.b);
+    splitPointsIntoLines(asteroidLine.points).forEach((line) => {
+      drawAsteroidLine(line.a, line.b, asteroidLine.subpoints);
     });
   });
 }
@@ -152,9 +170,14 @@ function drawShip() {
   translate(ship.x, ship.y);
   rotate(ship.orientation);
 
-  fill(color(ship.color));
-  stroke(color('#000'));
-  triangle(10, 0, -5, -5, -5, 5);
+  fill(color('#fd8700'));
+  noStroke();
+  // triangle(10, 0, -5, -5, -5, 5);
+  let xRandom = ((Math.random() * 6) - 3);
+  const yRandom = ((Math.random() * 2) - 1);
+  if (ship.planetIndex === -1) xRandom -= 50;
+  triangle(-20 + xRandom, yRandom, -13, -3, -13, 3);
+  image(images.ship, -13.7, -10, 27, 20);
 }
 
 function drawRays() {
@@ -385,24 +408,40 @@ function playLevelMusic() {
   levelMusic.loop();
 }
 
-function setup() {
-  setBackground();
-  createCanvas(canvasWidth, canvasHeight);
-  setInterval(compute, 10);
-  playShipEngineSound();
-  initChronoMeter();
-  playLevelMusic();
+function setBackground() {
+  levelBackground = loadImage(level.background);
 }
 
-function initChronoMeter(){
+function initChronoMeter() {
   chronoStart = Date.now();
   chronoCurrent = Date.now();
   chronoEnd = Date.now();
   isChronoEnded = false;
 }
 
-function setBackground() {
-  levelBackground = loadImage(level.background);
+function createAsteriodPoints() {
+  asteroidLines.forEach((asteroidLine, t) => {
+    const distance = getDistance(asteroidLine.points[0].x, asteroidLine.points[0].y, asteroidLine.points[1].x, asteroidLine.points[1].y);
+    const v = 22;
+    const space = Math.floor(distance / v);
+    const delta = (distance / v) - space;
+    asteroidLines[t].subpoints = [];
+    for (let i = 0; i <= space; i += 1) {
+      const pos = getPositionAlongTheLine(asteroidLine.points[0].x, asteroidLine.points[0].y, asteroidLine.points[1].x, asteroidLine.points[1].y, ((i * v) / distance) + (delta / v));
+      pos.x += (Math.random() * 10) - 5;
+      pos.y += (Math.random() * 10) - 5;
+      asteroidLine.subpoints.push({ pos, type: Math.floor(Math.random() * 4) });
+    }
+  });
+}
+
+function setup() {
+  setBackground();
+  createCanvas(canvasWidth, canvasHeight);
+  setInterval(compute, 10);
+  playShipEngineSound();
+  initChronoMeter();
+  createAsteriodPoints();
 }
 
 function draw() {
@@ -424,25 +463,56 @@ function keyPressed() {
 }
 
 function displayLevelEndModal(){
-  let levelEndModalElement = document.getElementById("levelEndModal");
+  const levelEndModalElement = document.getElementById("levelEndModal");
   if(levelEndModalElement){
     levelEndModalElement.classList.remove("invisible");
   }
+
+  const chronoEndElement = document.getElementById("chronoEnd");
+  if(chronoEndElement) {
+    chronoEndElement.innerHTML = "" + timeToFinishLevel + " seconds";
+  }
+}
+
+function tryToQuit(){
+  if(!apiSendInAction){
+    const playerNameIsValid = checkPlayerName();
+    if(playerNameIsValid){
+      document.getElementById("error-message").classList.add("invisible");
+      const playerNameInput = document.getElementById("playerNameInput");
+      apiSendInAction = true;
+      postHighScoresViaAPI(level.levelNumber, playerNameInput.value, timeToFinishLevel).then(data => {
+        apiSendInAction = false;
+        window.location.href = "/";
+      });
+    }
+    else{
+      document.getElementById("error-message").classList.remove("invisible");
+    }
+  }
+
 }
 
 function tryToGoToNextLevel(){
-  const playerNameIsValid = checkPlayerName();
-  if(playerNameIsValid){
-    const playerNameInput = document.getElementById("playerNameInput");
+  if(!apiSendInAction){
+    const playerNameIsValid = checkPlayerName();
+    if(playerNameIsValid){
+      document.getElementById("error-message").classList.add("invisible");
+      const playerNameInput = document.getElementById("playerNameInput");
+      apiSendInAction = true;
+      postHighScoresViaAPI(level.levelNumber, playerNameInput.value, timeToFinishLevel).then(data => {
+        apiSendInAction = false;
+        if(level.levelNumber == 2){
+          goToCredits();
+        }else{
+          goToNextLevel(level.levelNumber+1)
+        }
 
-    postHighScoresViaAPI(levelNumber, playerNameInput.value, timeToFinishLevel).then(data => {
-      if(levelNumber == 2){
-        goToCrew();
-      }else{
-        goToNextLevel(levelNumber+1)
-      }
-
-		});
+      });
+    }
+    else{
+      document.getElementById("error-message").classList.remove("invisible");
+    }
   }
 }
 
@@ -496,10 +566,15 @@ function postHighScoresViaAPI(level, playerName, time) {
   });
 }
 
+function touchStarted() {
+  getAudioContext().resume();
+  keyPressed();
+}
+
 window.setup = setup;
 window.draw = draw;
 window.keyPressed = keyPressed;
 window.preload = preload;
 window.touchStarted = touchStarted;
-
 window.tryToGoToNextLevel = tryToGoToNextLevel;
+window.tryToQuit = tryToQuit;

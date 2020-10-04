@@ -6,20 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press Start 2P">
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <title>STUCK IN ORBIT</title>
 </head>
 <body>
 
   <div id="levelEndModal" class="invisible">
     <div class="title">CONGRATULATION !</div>
     <div class="subtitle">You have finished this level in</div>
-    <div class="chronoEnd">15 Seconds</div>
+    <div id="chronoEnd" class="chronoEnd">15 Seconds</div>
     <div class="input-title">Your name</div>
     <input type="text" id="playerNameInput" name="playerName" required minlength="3" maxlength="12" size="10">
 
-    <div class="error-message invisible">You must have to enter a playername to continue !</div>
+    <div id="error-message" class="error-message invisible">You must have to enter a playername to continue !</div>
     <div class="button-list">
-      <div id="button-quit" class="button button-quit-inactive" onclick="document.location.reload(true);">QUIT</div>
+      <div id="button-quit" class="button button-quit-inactive" onclick="tryToQuit()">QUIT</div>
       <div id="button-nextLevel" class="button button-nextLevel-inactive" onclick="tryToGoToNextLevel()">GO TO NEXT LEVEL</div>
     </div>
   </div>

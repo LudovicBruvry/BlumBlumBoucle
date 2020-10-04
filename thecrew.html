@@ -21,11 +21,6 @@
 	<span id="title">
 		<h1>STUCK IN ORBIT</h1>
 	</span>
-	<div id="preMenu" class="menu">
-		<div class="bouton-list">
-			<span class='long-btn' onClick="Home.display()">Play</span>
-		</div>
-	</div>
 	<div id="homeMenu" class="menu menuHidden">
 		<div class="bouton-list">
 			<span class='long-btn' onClick="LevelSelection.display()">Launch Game</span>
@@ -33,39 +28,13 @@
 			<span class='long-btn' onClick="Crew.display()">The Crew</span>
 		</div>
 	</div>
-	<div id="highScoresMenu" class="menu menuHidden">
-		<span id="subtitle">
-			<h1>High-Score</h1>
-		</span>
-		<div class="level-selection-buttons-container">
-			<span></span>
-			<span class='little-btn' onClick="HighScores.previousLevel()">&lt;</span>
-			<span id="levelSelectedText"></span>
-			<span class='little-btn' onClick="HighScores.nextLevel()">&gt;</span>
-			<span></span>
-		</div>
-		<div id="highScoreTable">
-		</div>
-		<div class="bouton-list">
-			<span class='long-btn' onClick="Home.display()">Back</span>
-		</div>
-	</div>
-	<div id="theCrewMenu" class="menu menuHidden">
+	<div id="theCrewMenu" class="menu">
 		<span id="subtitle">
 			<h1>The Crew</h1>
 		</span>
 		<div id='crewContainer'><img id='theCrew' src='Assets/Sprites/thecrew.jpg'> </div>
 		<div class="bouton-list">
-			<span class='long-btn' onClick="Home.display()">Back</span>
-		</div>
-	</div>
-	<div id="levelSelectionMenu" class="menu menuHidden">
-		<div class="bouton-list">
-			<span class='long-btn' onClick="LevelSelection.launchLevel(0)">Launch Tutorial Level</span>
-			<span class='long-btn' onClick="LevelSelection.launchLevel(1)">Launch Level 1</span>
-			<span class='long-btn' onClick="LevelSelection.launchLevel(2)">Launch Level 2</span>
-
-			<span class='long-btn' onClick="Home.display()" style="margin-top: 15px;">Back</span>
+			<span class='long-btn' onClick="window.location.href='/'">Back</span>
 		</div>
 	</div>
 </body>

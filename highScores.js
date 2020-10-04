@@ -6,6 +6,7 @@ class HighScores {
 
   static display() {
 
+    document.getElementById('levelSelectedText').innerHTML = 'Tutorial level';
 		this.getHighScoresAPI().then(data => {
 			this.highScores = JSON.parse(data);
 			this.displayHighScore(this.levelSelected);
@@ -85,6 +86,4 @@ class HighScores {
       request.send();
     });
   }
-
-
 }
