@@ -49,10 +49,23 @@ const ship = {
 };
 let lastShipPlanetIndex = 0;
 
+let shipEngineSound;
+let boostSound;
+let explodeSound1;
+let explodeSound2;
+
+function preload() {
+  shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
+  boostSound = loadSound('./Assets/Sound/Boost.mp3');
+  explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
+  explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
+}
+
 function gameover() {
   ship.planetIndex = lastShipPlanetIndex;
   ship.speed = orbitSpeed;
   ship.deadPlanetIndex = -1;
+  playExplosion();
 }
 
 function drawPlanet(_x, _y, _size, _color, _orbit) {
@@ -236,6 +249,30 @@ function compute() {
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
   setInterval(compute, 10);
+  playShipEngineSound();
+}
+
+function playShipEngineSound(){
+  getAudioContext().resume(); 
+  shipEngineSound.setVolume(0.08);
+  shipEngineSound.loop();
+}
+
+function playExplosion(){
+  getAudioContext().resume(); 
+  explodeSound2.setVolume(0.3);
+  explodeSound2.play();
+}
+
+function playBoost(){
+  getAudioContext().resume(); 
+  boostSound.setVolume(0.1);
+  boostSound.play();
+}
+
+
+function touchStarted() {
+  getAudioContext().resume();
 }
 
 function draw() {
@@ -246,10 +283,14 @@ function draw() {
 }
 
 function keyPressed() {
+
   calculateShipTrajectory();
+  playBoost();
   ship.planetIndex = -1;
 }
 
 window.setup = setup;
 window.draw = draw;
 window.keyPressed = keyPressed;
+window.preload = preload;
+window.touchStarted = touchStarted;
