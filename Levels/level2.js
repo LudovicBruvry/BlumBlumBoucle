@@ -24,8 +24,8 @@ const level = {
     { x: 500, y: 750, size: 150, color: '#FF0', orbitDistance: 50 },
     { x: 700, y: 650, size: 150, color: '#FF0', orbitDistance: 50 },
     ],
-    background : 'Assets/Sprites/Fond6.png',
-    music : 'Assets/Music/LEVEL2.mp3',
+    background : './Assets/Sprites/Fond6.png',
+    music : './Assets/Music/LEVEL2.mp3',
     asteroidLines : [
         { points: [
             { x: 100, y: 500 },

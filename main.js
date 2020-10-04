@@ -5,11 +5,10 @@ const SHOW_ORBITS = true;
 const canvasWidth = 1920;
 const canvasHeight = 933;
 
-const asteroidLines = [
-  { points: [{ x: 100, y: 500 }, { x: 400, y: 510 }, { x: 500, y: 430 }, { x: 1200, y: 600 }] },
-];
 const level = window.level;
 let planets = level.planets;
+let asteroidLines = level.asteroidLines;
+let levelMusicPath = level.music;
 let levelBackground = 220;
 
 const orbitSpeed = 0.3;
@@ -35,9 +34,11 @@ let shipEngineSound;
 let boostSound;
 let explodeSound1;
 let explodeSound2;
+let levelMusic;
 
 function preload() {
   shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
+  levelMusic = loadSound(levelMusicPath);
   boostSound = loadSound('./Assets/Sound/boost3.wav');
   explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
   explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
@@ -279,11 +280,18 @@ function playShipEngineSound() {
   shipEngineSound.loop();
 }
 
+function playLevelMusic() {
+  getAudioContext().resume();
+  levelMusic.setVolume(0.5);
+  levelMusic.loop();
+}
+
 function setup() {
   setBackground();
   createCanvas(canvasWidth, canvasHeight);
   setInterval(compute, 10);
   playShipEngineSound();
+  playLevelMusic();
 }
 
 function setBackground() {
