@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="menu.css">
+	<script src="home.js"></script>
+	<script src="highScores.js"></script>
+	<script src="LevelSelection.js"></script>
+	<script src="music.js"></script>
+	<script src="crew.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press Start 2P">
+	<title>STUCK IN ORBIT</title>
+</head>
+
+<body>
+	<span id="title">
+		<h1>STUCK IN ORBIT</h1>
+	</span>
+	<div id="homeMenu" class="menu menuHidden">
+		<div class="bouton-list">
+			<span class='long-btn' onClick="LevelSelection.display()">Launch Game</span>
+			<span class='long-btn' onClick="HighScores.display()">High Scores</span>
+			<span class='long-btn' onClick="Crew.display()">The Crew</span>
+		</div>
+	</div>
+	<div id="theCrewMenu" class="menu">
+		<span id="subtitle">
+			<h1>The Crew</h1>
+		</span>
+		<div id='crewContainer'><img id='theCrew' src='Assets/Sprites/thecrew.jpg'> </div>
+		<div class="bouton-list">
+			<span class='long-btn' onClick="window.location.href='/'">Back</span>
+		</div>
+	</div>
+</body>
+
+</html>
