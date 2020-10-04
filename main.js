@@ -10,6 +10,7 @@ const asteroidLines = [
 ];
 const level = window.level;
 let planets = level.planets;
+let levelBackground = 220;
 
 const orbitSpeed = 0.3;
 const spaceSpeed = 8;
@@ -37,7 +38,7 @@ let explodeSound2;
 
 function preload() {
   shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
-  boostSound = loadSound('./Assets/Sound/Boost.mp3');
+  boostSound = loadSound('./Assets/Sound/boost3.wav');
   explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
   explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
 }
@@ -279,13 +280,18 @@ function playShipEngineSound() {
 }
 
 function setup() {
+  setBackground();
   createCanvas(canvasWidth, canvasHeight);
   setInterval(compute, 10);
   playShipEngineSound();
 }
 
+function setBackground() {
+  levelBackground = loadImage(level.background);
+}
+
 function draw() {
-  background(220);
+  background(levelBackground);
   drawAsteroidLines();
   drawPlanets();
   drawRays();
