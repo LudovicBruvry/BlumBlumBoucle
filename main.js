@@ -35,6 +35,7 @@ let boostSound;
 let explodeSound1;
 let explodeSound2;
 let levelMusic;
+let images;
 
 function preload() {
   shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
@@ -42,6 +43,11 @@ function preload() {
   boostSound = loadSound('./Assets/Sound/boost3.wav');
   explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
   explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
+  images = {
+    crateres: loadImage('./Assets/Sprites/Crateres/c0.png'),
+    earth: loadImage('./Assets/Sprites/Earth/PE001.png'),
+    saumon: loadImage('./Assets/Sprites/Saumon/S01.png'),
+  };
 }
 
 function playExplosion() {
@@ -71,10 +77,9 @@ function levelEnd() {
   console.log('Con grat ulation !');
 }
 
-function drawPlanet(_x, _y, _size, _color, _orbit) {
-  fill(color(_color));
-  noStroke();
-  ellipse(_x, _y, _size, _size);
+function drawPlanet(_x, _y, _size, i, _orbit) {
+  const date = Math.ceil(new Date().getTime() / 100) % 30;
+  image(images[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
   if (SHOW_ORBITS) {
     noFill();
     stroke(color('#000'));
@@ -100,8 +105,8 @@ function drawAsteroidLines() {
 }
 
 function drawPlanets() {
-  planets.forEach(({ x, y, size, color, orbitDistance }) => {
-    drawPlanet(x, y, size, color, orbitDistance);
+  planets.forEach(({ x, y, size, image, orbitDistance }) => {
+    drawPlanet(x, y, size, image, orbitDistance);
   });
 }
 
