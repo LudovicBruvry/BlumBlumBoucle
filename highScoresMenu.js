@@ -1,8 +1,8 @@
-let highScoresMenu = {
+class HighScoresMenu {
 	//highScores: [], //PROD
-	maxLevel:2,
-	levelSelected: 0,
-	highScores: [ //DEBUG DATA
+	maxLevel= 2;
+	levelSelected= 0;
+	highScores= [ //DEBUG DATA
 			{
 				level : 1, 
 				highScores : [
@@ -33,8 +33,9 @@ let highScoresMenu = {
 					}
 				]
 			}
-		],
-	display: function(){
+		];
+
+	static display(){
 		
 		this.getHighScoresAPI().then(data => {
 			
@@ -49,8 +50,8 @@ let highScoresMenu = {
 			document.getElementById("levelSelectedText").innerHTML = 'Tutorial level';
 		});
 		
-	},
-	previousLevel: function(){
+	}
+	static previousLevel(){
 		if(highScoresMenu.levelSelected != 0){
 			highScoresMenu.levelSelected--;
 			highScoresMenu.getHighScoresForLevel(highScoresMenu.levelSelected);
@@ -61,19 +62,19 @@ let highScoresMenu = {
 				document.getElementById("levelSelectedText").innerHTML = 'Level -' + highScoresMenu.levelSelected + '-';
 			}
 		}
-	},
-	nextLevel: function(){
+	}
+	static nextLevel(){
 		if(highScoresMenu.levelSelected != highScoresMenu.maxLevel){
 			highScoresMenu.levelSelected++;
 			highScoresMenu.getHighScoresForLevel(highScoresMenu.levelSelected);
 			
 			document.getElementById("levelSelectedText").innerHTML = 'Level -' + highScoresMenu.levelSelected + '-';
 		}
-	},
-	getHighScoresForLevel : function(level = 0){
+	}
+	static getHighScoresForLevel(level = 0){
 		highScoresMenu.displayHighScore(level);
-	},
-	displayHighScore : function(level = 0){
+	}
+	static displayHighScore(level = 0){
 		let highScoreTable = document.getElementById("highScoreTable");
 		
 		const result = highScoresMenu.highScores.filter(element => element.level == level);
@@ -90,8 +91,8 @@ let highScoresMenu = {
 		
 		highScoreTable.innerHTML = content;
 		
-	},
-	getHighScoresAPI : function() {
+	}
+	static getHighScoresAPI() {
 		
 		return new Promise((resolve, reject) => {
 	
@@ -111,6 +112,4 @@ let highScoresMenu = {
 			request.send();
 		});
 	}
-
-};
-
+}
