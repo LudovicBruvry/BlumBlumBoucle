@@ -249,9 +249,6 @@ function calculateShipTrajectory() {
   ship.speed = spaceSpeed;
 
   handleAsteroidLinesTrajectory(dx, dy);
-  if (ship.isDead) {
-    return;
-  }
 
   planets.forEach((planet, index) => {
     const { x, y, size, orbitDistance } = planet;
