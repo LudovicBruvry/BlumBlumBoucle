@@ -25,7 +25,7 @@ const level = {
 
     { x: 1500, y: 700, size: 35, image: 'earth', orbitDistance: 50 },
   ],
-  background: 'Assets/Sprites/Fond5.png',
+  background: 'Assets/Sprites/Fond5.jpg',
   music: 'Assets/Music/LEVEL1_2.mp3',
   asteroidLines: [
     {
