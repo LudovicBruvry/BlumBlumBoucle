@@ -12,7 +12,7 @@ const planets = [
   { x: 200, y: 700, size: 15, color: '#FF0', orbitDistance: 50 },
 ];
 
-const orbitSpeed = 1;
+const orbitSpeed = 0.5;
 const spaceSpeed = 8;
 const ship = {
   x: 400,
@@ -148,6 +148,12 @@ function moveShip() {
     moveShipInOrbit();
   }
 }
+function computeClockwise(_ship, _planet, _anchor) {
+  const slopeShipPlanet = (_planet.y - _ship.y) / (_planet.x - _ship.x);
+  const slopeShipAnchor = (_anchor.y - _ship.y) / (_anchor.x - _ship.x);
+
+  return slopeShipAnchor < slopeShipPlanet;
+}
 
 function calculateShipTrajectory() {
   const planetOrigin = planets[ship.planetIndex];
@@ -185,15 +191,15 @@ function calculateShipTrajectory() {
     const dy = ship.y + (1000 * sin(ship.orientation));
 
     // SUCCES
-    const isIntersectingWithRightCirclePoint = intersects(ptsOuterOrbit[0].x, ptsOuterOrbit[0].y, ptsInnerCircle[0].x, ptsInnerCircle[0].y, ship.x, ship.y, dx, dy);
-    const isIntersectingWithLeftCirclePoint = intersects(ptsOuterOrbit[1].x, ptsOuterOrbit[1].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
+    const isIntersectingWithOrbit1 = intersects(ptsOuterOrbit[0].x, ptsOuterOrbit[0].y, ptsInnerCircle[0].x, ptsInnerCircle[0].y, ship.x, ship.y, dx, dy);
+    const isIntersectingWithOrbit2 = intersects(ptsOuterOrbit[1].x, ptsOuterOrbit[1].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
     const isIntersectingWithPlanet = intersects(ptsInnerCircle[0].x, ptsInnerCircle[0].y, ptsInnerCircle[1].x, ptsInnerCircle[1].y, ship.x, ship.y, dx, dy);
 
-    if (isIntersectingWithRightCirclePoint || isIntersectingWithLeftCirclePoint) {
+    if (isIntersectingWithOrbit1 || isIntersectingWithOrbit2) {
       ship.isOrbitValidated = true;
       ship.nextPlanetIndex = index;
 
-      const anchorPoint = isIntersectingWithRightCirclePoint
+      const anchorPoint = isIntersectingWithOrbit1
         ? { x: ptsInnerOrbit[0].x, y: ptsInnerOrbit[0].y }
         : { x: ptsInnerOrbit[1].x, y: ptsInnerOrbit[1].y };
 
@@ -201,12 +207,8 @@ function calculateShipTrajectory() {
 
       ship.anchorPoint = { planetAngle: getOrbitAngle(planet, anchorPoint), clockwise: true, point: anchorPoint };
 
-      // calculate accrosh point clockwise
-      if (planetOrigin.y <= planet.y) {
-        ship.anchorPoint.clockwise = isIntersectingWithRightCirclePoint;
-      } else {
-        ship.anchorPoint.clockwise = isIntersectingWithLeftCirclePoint;
-      }
+      // calculate anchor point clockwise
+      ship.anchorPoint.clockwise = computeClockwise(ship, planet, ship.anchorPoint.point);
     }
     ship.isDead = ship.isDead || isIntersectingWithPlanet;
   });
