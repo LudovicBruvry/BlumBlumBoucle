@@ -1,6 +1,6 @@
 class LevelSelection {
 
-	
+
 
 	static display() {
 		const menuToDisplay="levelSelectionMenu";
@@ -16,16 +16,16 @@ class LevelSelection {
 	static launchLevel(levelToLaunch) {
 		switch(levelToLaunch){
 			case 0:
-				document.location.href= "game_tutorial.html";
+				document.location.href= "game-tutorial.html";
 				break;
 			case 1:
-				document.location.href= "game_level1.html";
+				document.location.href= "game-level1.html";
 				break;
 			case 2:
-				document.location.href= "game_level2.html";
+				document.location.href= "game-level2.html";
 				break;
 			default:
-				document.location.href= "game_tutorial.html";
+				document.location.href= "game-tutorial.html";
 				break;
 		}
 	}
