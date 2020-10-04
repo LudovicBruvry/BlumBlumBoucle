@@ -41,43 +41,43 @@ class HighScoresMenu {
 			
 			console.log(data);
 		
-		    highScoresMenu.highScores = JSON.parse(data);
+		    this.highScores = JSON.parse(data);
 		
 			document.getElementById("homeMenu").classList.add("menuHidden");
 			document.getElementById("highScoresMenu").classList.remove("menuHidden");
-			highScoresMenu.levelSelected = 0;	
-			highScoresMenu.getHighScoresForLevel(highScoresMenu.levelSelected);
+			this.levelSelected = 0;	
+			this.getHighScoresForLevel(this.levelSelected);
 			document.getElementById("levelSelectedText").innerHTML = 'Tutorial level';
 		});
 		
 	}
 	static previousLevel(){
-		if(highScoresMenu.levelSelected != 0){
-			highScoresMenu.levelSelected--;
-			highScoresMenu.getHighScoresForLevel(highScoresMenu.levelSelected);
-			if(highScoresMenu.levelSelected==0){
+		if(this.levelSelected != 0){
+			this.levelSelected--;
+			this.getHighScoresForLevel(this.levelSelected);
+			if(this.leveSelected==0){
 			document.getElementById("levelSelectedText").innerHTML = 'Tutorial level';
 			}
 			else{
-				document.getElementById("levelSelectedText").innerHTML = 'Level -' + highScoresMenu.levelSelected + '-';
+				document.getElementById("levelSelectedText").innerHTML = 'Level -' + this.levelSelected + '-';
 			}
 		}
 	}
 	static nextLevel(){
-		if(highScoresMenu.levelSelected != highScoresMenu.maxLevel){
-			highScoresMenu.levelSelected++;
-			highScoresMenu.getHighScoresForLevel(highScoresMenu.levelSelected);
+		if(this.levelSelected != this.maxLevel){
+			this.levelSelected++;
+			this.getHighScoresForLevel(this.levelSelected);
 			
-			document.getElementById("levelSelectedText").innerHTML = 'Level -' + highScoresMenu.levelSelected + '-';
+			document.getElementById("levelSelectedText").innerHTML = 'Level -' + this.levelSelected + '-';
 		}
 	}
 	static getHighScoresForLevel(level = 0){
-		highScoresMenu.displayHighScore(level);
+		HighScoresMenu.displayHighScore(level);
 	}
 	static displayHighScore(level = 0){
 		let highScoreTable = document.getElementById("highScoreTable");
 		
-		const result = highScoresMenu.highScores.filter(element => element.level == level);
+		const result = this.highScores.filter(element => element.level == level);
 		
 		let content = "";
 		if(result.length >= 1){
