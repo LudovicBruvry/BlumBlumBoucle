@@ -132,7 +132,8 @@ function drawPlanet(_x, _y, _size, _color, i, _orbit) {
 
   if (SHOW_ORBITS) {
     noFill();
-    stroke(color('#000'));
+    stroke(color('#ffffff'));
+    strokeWeight(0.1);
     ellipse(_x, _y, _size + _orbit, _size + _orbit);
   }
 }
