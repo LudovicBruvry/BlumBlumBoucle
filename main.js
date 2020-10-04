@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/extensions
-import { getDistance, findCircleLineIntersections, intersects, getOrbitAngle } from './mathHelpers.js';
+import { getDistance, findCircleLineIntersections, intersects, getOrbitAngle, findLinesIntersection, getArrayMin, splitPointsIntoLines } from './mathHelpers.js';
 
 const SHOW_ORBITS = true;
 const canvasWidth = 1920;
@@ -10,11 +10,10 @@ let chronoCurrent = null;
 let chronoEnd = null;
 let isChronoEnded = false;
 
-const asteroidLines = [
-  { points: [{ x: 100, y: 500 }, { x: 400, y: 510 }, { x: 500, y: 430 }, { x: 1200, y: 600 }] },
-];
 const level = window.level;
 let planets = level.planets;
+let asteroidLines = level.asteroidLines;
+let levelMusicPath = level.music;
 let levelBackground = 220;
 
 const orbitSpeed = 0.3;
@@ -23,29 +22,44 @@ const ship = {
   x: 400,
   y: 400,
   speed: orbitSpeed,
+  acceleration: 0,
   orientation: 0,
-  planetAngle: -Math.PI,
+  planetAngle: -Math.PI / 4,
   planetIndex: 0,
   clockwise: true,
   isDead: false,
   isOrbitValidated: false,
   nextPlanetIndex: -1,
   deadPlanetIndex: -1,
+  deadPoint: null,
   anchorPoint: { planetAngle: 0, clockwise: true, point: null },
   color: 'white',
 };
 let lastShipPlanetIndex = 0;
 
+/*
+let usedPlanetForTrajectory = null;
+let usedSensForTrajectory = 1; // 1->up, 0->isOk, -1->down
+*/
+
 let shipEngineSound;
 let boostSound;
 let explodeSound1;
 let explodeSound2;
+let levelMusic;
+let images;
 
 function preload() {
   shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
+  levelMusic = loadSound(levelMusicPath);
   boostSound = loadSound('./Assets/Sound/boost3.wav');
   explodeSound1 = loadSound('./Assets/Sound/explode1.mp3');
   explodeSound2 = loadSound('./Assets/Sound/explode2.mp3');
+  images = {
+    crateres: loadImage('./Assets/Sprites/Crateres/c0.png'),
+    earth: loadImage('./Assets/Sprites/Earth/PE001.png'),
+    saumon: loadImage('./Assets/Sprites/Saumon/S01.png'),
+  };
 }
 
 function playExplosion() {
@@ -67,6 +81,7 @@ function touchStarted() {
 function gameover() {
   ship.planetIndex = lastShipPlanetIndex;
   ship.speed = orbitSpeed;
+  ship.deadPoint = null;
   ship.deadPlanetIndex = -1;
   playExplosion();
 }
@@ -93,10 +108,15 @@ function convertTimeDiff(diff){
   return (dateDiff.getSeconds() + 60 * dateDiff.getMinutes());
 }
 
-function drawPlanet(_x, _y, _size, _color, _orbit) {
-  fill(color(_color));
-  noStroke();
-  ellipse(_x, _y, _size, _size);
+function drawPlanet(_x, _y, _size, _color, i, _orbit) {
+  if (i) {
+    image(images[i], _x - (_size / 2), _y - (_size / 2), _size, _size);
+  } else {
+    fill(color(_color));
+    noStroke();
+    ellipse(_x, _y, _size, _size);
+  }
+
   if (SHOW_ORBITS) {
     noFill();
     stroke(color('#000'));
@@ -111,19 +131,15 @@ function drawAsteroidLine(pointA, pointB) {
 
 function drawAsteroidLines() {
   asteroidLines.forEach((asteroidLine) => {
-    let lastPoint = asteroidLine.points[0];
-    // eslint-disable-next-line no-plusplus
-    for (let index = 1; index < asteroidLine.points.length; index++) {
-      const point = asteroidLine.points[index];
-      drawAsteroidLine(lastPoint, point);
-      lastPoint = point;
-    }
+    splitPointsIntoLines(asteroidLine.points).forEach(line => {
+      drawAsteroidLine(line.a, line.b);
+    });
   });
 }
 
 function drawPlanets() {
-  planets.forEach(({ x, y, size, color, orbitDistance }) => {
-    drawPlanet(x, y, size, color, orbitDistance);
+  planets.forEach(({ x, y, size, color, image, orbitDistance }) => {
+    drawPlanet(x, y, size, color, image, orbitDistance);
   });
 }
 
@@ -151,27 +167,40 @@ function drawRays() {
 function moveShipInSpace() {
   const o = ship.orientation;
   let dr = ship.speed;
-  if (ship.anchorPoint.point !== null) {
-    const distanceBetweenShipAndNextPlanet = getDistance(ship.x, ship.y, ship.anchorPoint.point.x, ship.anchorPoint.point.y);
-    dr = Math.min(distanceBetweenShipAndNextPlanet, dr);
+
+  const nextTargetList = [ship.speed];
+  let deadPlanet = null;
+  let deadPlanetDistance = Infinity;
+  let deadPointDistance = Infinity;
+
+  if (ship.anchorPoint.point !== null) nextTargetList.push(parseInt(getDistance(ship.x, ship.y, ship.anchorPoint.point.x, ship.anchorPoint.point.y), 10));
+  if (ship.deadPlanetIndex > -1) {
+    deadPlanet = planets[ship.deadPlanetIndex];
+    deadPlanetDistance = parseInt(getDistance(ship.x, ship.y, deadPlanet.x, deadPlanet.y), 10);
+    nextTargetList.push(deadPlanetDistance);
   }
+  if (ship.deadPoint !== null) {
+    deadPointDistance = parseInt(getDistance(ship.x, ship.y, ship.deadPoint.x, ship.deadPoint.y), 10);
+    nextTargetList.push(deadPointDistance);
+  }
+
+  dr = Math.min(...nextTargetList);
   const dx = dr * cos(o);
   const dy = dr * sin(o);
   ship.x += dx;
   ship.y += dy;
 
-  if (ship.x < 0 || ship.x > canvasWidth) {
-    gameover();
+  if (ship.deadPlanetIndex > -1) {
+    deadPlanetDistance = parseInt(getDistance(ship.x, ship.y, deadPlanet.x, deadPlanet.y), 10);
+    if (deadPlanetDistance < deadPlanet.size / 2) gameover();
   }
-  if (ship.y < 0 || ship.y > canvasWidth) {
-    gameover();
+  if (ship.deadPoint !== null) {
+    deadPointDistance = parseInt(getDistance(ship.x, ship.y, ship.deadPoint.x, ship.deadPoint.y), 10);
+    if (deadPointDistance < ship.speed) gameover();
   }
 
-  if (ship.deadPlanetIndex > -1) {
-    const deadPlanet = planets[ship.deadPlanetIndex];
-    const distanceBetweenShipAndPlanet = getDistance(ship.x, ship.y, deadPlanet.x, deadPlanet.y);
-    if (distanceBetweenShipAndPlanet < deadPlanet.size / 2) gameover();
-  }
+  if (ship.x < 0 || ship.x > canvasWidth) gameover();
+  if (ship.y < 0 || ship.y > canvasWidth) gameover();
 }
 
 function moveShipInOrbit() {
@@ -181,6 +210,11 @@ function moveShipInOrbit() {
   const dr = (size + orbitDistance) / 2;
   const dx = dr * cos(o);
   const dy = dr * sin(o);
+  if (ship.speed > orbitSpeed) {
+    ship.speed += ship.acceleration;
+    ship.acceleration += 0.0005;
+  }
+  if (ship.speed < orbitSpeed) ship.speed = orbitSpeed;
   ship.x = x + dx;
   ship.y = y + dy;
   const angularVelocity = (2 * ship.speed) / (Math.PI * dr);
@@ -195,6 +229,7 @@ function moveShip() {
     moveShipInOrbit();
   }
 }
+
 function computeClockwise(_ship, _planet, _anchor) {
   const slopeShipPlanet = (_planet.y - _ship.y) / (_planet.x - _ship.x);
   const slopeShipAnchor = (_anchor.y - _ship.y) / (_anchor.x - _ship.x);
@@ -202,16 +237,55 @@ function computeClockwise(_ship, _planet, _anchor) {
   return slopeShipAnchor < slopeShipPlanet;
 }
 
+function handleAsteroidLinesTrajectory(dx, dy) {
+  const deadAsteroidPoints = [];
+
+  asteroidLines.forEach((asteroidLine) => {
+    splitPointsIntoLines(asteroidLine.points).forEach((line) => {
+      const isIntesecting = intersects(line.a.x, line.a.y, line.b.x, line.b.y, ship.x, ship.y, dx, dy);
+      if (isIntesecting) {
+        const intersection = findLinesIntersection({ x: ship.x, y: ship.y }, { x: dx, y: dy }, line.a, line.b);
+        ship.isDead = true;
+        deadAsteroidPoints.push(intersection);
+      }
+    });
+  });
+
+  if (deadAsteroidPoints.length < 1) return;
+
+  ship.deadPoint = getArrayMin(deadAsteroidPoints, (point) => getDistance(ship.x, ship.y, point.x, point.y));
+  ship.isDead = true;
+}
+
+/*
+function isUpDownOrEqualTrajectory(lineMedium) {
+  var intersectWithPlanet = findCircleLinePointsIntersections(
+    usedPlanetForTrajectory.r, usedPlanetForTrajectory.x, usedPlanetForTrajectory.y,
+    { x: ship.x, y: ship.y }, lineMedium.b);
+
+  if (intersectWithPlanet.length < 1) return 0; // Perfect Trajectory
+  return usedSensForTrajectory;
+}
+
+function calculateSensForTrajectory(planet){
+  var shipPos = ship.x + (-1 * ship.y);
+  var planetPos = planet.x + (-1 * planet.y);
+
+  return shipPos < planetPos ? 1 : -1;
+}
+*/
+
 function calculateShipTrajectory() {
   let deadPlanetDistance = Infinity;
   let validOrbitDistance = Infinity;
+  const dx = ship.x + (1000 * cos(ship.orientation));
+  const dy = ship.y + (1000 * sin(ship.orientation));
 
   ship.isDead = false;
   ship.speed = spaceSpeed;
+  ship.acceleration = -0.1;
 
-  if (ship.isDead) {
-    return;
-  }
+  handleAsteroidLinesTrajectory(dx, dy);
 
   planets.forEach((planet, index) => {
     const { x, y, size, orbitDistance } = planet;
@@ -229,8 +303,6 @@ function calculateShipTrajectory() {
     const ptsOuterOrbit = findCircleLineIntersections(r, x, y, m, n);
     const ptsInnerCircle = findCircleLineIntersections(r2, x, y, m, n);
     const ptsInnerOrbit = findCircleLineIntersections(r3, x, y, m, n);
-    const dx = ship.x + (1000 * cos(ship.orientation));
-    const dy = ship.y + (1000 * sin(ship.orientation));
 
     // SUCCES
     const isIntersectingWithOrbit1 = intersects(ptsOuterOrbit[0].x, ptsOuterOrbit[0].y, ptsInnerCircle[0].x, ptsInnerCircle[0].y, ship.x, ship.y, dx, dy);
@@ -281,11 +353,12 @@ function attachShipToNextPlanet() {
     ship.planetIndex = ship.nextPlanetIndex;
     lastShipPlanetIndex = ship.planetIndex;
     ship.nextPlanetIndex = -1;
-    ship.speed = orbitSpeed;
+    // ship.speed = orbitSpeed;
     ship.isDead = false;
     ship.isOrbitValidated = false;
     ship.planetAngle = ship.anchorPoint.planetAngle;
     ship.clockwise = ship.anchorPoint.clockwise;
+    ship.anchorPoint.point = null;
     const planet = planets[ship.planetIndex];
     if (planet.isEnd) levelEnd();
   }
@@ -302,6 +375,12 @@ function playShipEngineSound() {
   shipEngineSound.loop();
 }
 
+function playLevelMusic() {
+  getAudioContext().resume();
+  levelMusic.setVolume(0.5);
+  levelMusic.loop();
+}
+
 function setup() {
   setBackground();
   createCanvas(canvasWidth, canvasHeight);
@@ -315,6 +394,7 @@ function initChronoMeter(){
   chronoCurrent = Date.now();
   chronoEnd = Date.now();
   isChronoEnded = false;
+  playLevelMusic();
 }
 
 function setBackground() {
