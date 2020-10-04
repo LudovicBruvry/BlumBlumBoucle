@@ -92,10 +92,6 @@ function playBoost() {
   boostSound.play();
 }
 
-function touchStarted() {
-  getAudioContext().resume();
-}
-
 function gameover() {
   ship.planetIndex = lastShipPlanetIndex;
   ship.speed = orbitSpeed;
@@ -438,6 +434,11 @@ function keyPressed() {
   calculateShipTrajectory();
   playBoost();
   ship.planetIndex = -1;
+}
+
+function touchStarted() {
+  getAudioContext().resume();
+  keyPressed();
 }
 
 window.setup = setup;
