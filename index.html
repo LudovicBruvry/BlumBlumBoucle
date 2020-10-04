@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="menu.css">
 	<script src="home.js"></script>
 	<script src="highScores.js"></script>
+	<script src="LevelSelection.js"></script>
 	<script src="music.js"></script>
 	<script src="crew.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
@@ -20,19 +21,19 @@
 	<span id="title">
 		<h1>SPACE MANIA</h1>
 	</span>
-	<div id="preMenu">
+	<div id="preMenu" class="menu">
 		<div class="bouton-list">
 			<span class='long-btn' onClick="Home.display()">Play</span>
 		</div>
 	</div>
-	<div id="homeMenu" class="menuHidden">
+	<div id="homeMenu" class="menu menuHidden">
 		<div class="bouton-list">
-			<span class='long-btn' onClick="Home.launchGame()">Launch Game</span>
+			<span class='long-btn' onClick="LevelSelection.display()">Launch Game</span>
 			<span class='long-btn' onClick="HighScores.display()">High Scores</span>
 			<span class='long-btn' onClick="Crew.display()">The Crew</span>
 		</div>
 	</div>
-	<div id="highScoresMenu" class="menuHidden">
+	<div id="highScoresMenu" class="menu menuHidden">
 		<span id="subtitle">
 			<h1>High-Score</h1>
 		</span>
@@ -46,16 +47,25 @@
 		<div id="highScoreTable">
 		</div>
 		<div class="bouton-list">
-			<span class='long-btn' onClick="Home.display()">Retour</span>
+			<span class='long-btn' onClick="Home.display()">Back</span>
 		</div>
 	</div>
-	<div id="theCrewMenu" class="menuHidden">
+	<div id="theCrewMenu" class="menu menuHidden">
 		<span id="subtitle">
 			<h1>The Crew</h1>
 		</span>
 		<div id='crewContainer'><img id='theCrew' src='Assets/Sprites/thecrew.png'> </div>
 		<div class="bouton-list">
-			<span class='long-btn' onClick="Home.display()">Retour</span>
+			<span class='long-btn' onClick="Home.display()">Back</span>
+		</div>
+	</div>
+	<div id="levelSelectionMenu" class="menu menuHidden">
+		<div class="bouton-list">
+			<span class='long-btn' onClick="LevelSelection.launchLevel(0)">Launch Tutorial Level</span>
+			<span class='long-btn' onClick="LevelSelection.launchLevel(1)">Launch Level 1</span>
+			<span class='long-btn' onClick="LevelSelection.launchLevel(2)">Launch Level 2</span>
+
+			<span class='long-btn' onClick="Home.display()" style="margin-top: 15px;">Back</span>
 		</div>
 	</div>
 </body>

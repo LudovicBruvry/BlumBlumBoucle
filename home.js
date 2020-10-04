@@ -1,14 +1,11 @@
 class Home {
   static display() {
-    document.getElementById('highScoresMenu').classList.add('menuHidden');
-    document.getElementById('theCrewMenu').classList.add('menuHidden');
-    document.getElementById('homeMenu').classList.remove('menuHidden');
-    if (!document.getElementById('preMenu').classList.contains('menuHidden')) {
-      document.getElementById('preMenu').classList.add('menuHidden');
-    }
-  }
-
-  static launchGame() {
-    console.log('Launch game');
+    const menuToDisplay="homeMenu";
+		(Array.from(document.getElementsByClassName("menu"))).forEach(element => {
+			if(!element.classList.contains("menuHidden")){
+				element.classList.add("menuHidden");
+			}
+		});
+		document.getElementById(menuToDisplay).classList.remove("menuHidden");
   }
 }

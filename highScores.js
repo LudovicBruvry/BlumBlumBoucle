@@ -1,85 +1,60 @@
 class HighScores {
-  // highScores: [], //PROD
-  maxLevel = 2;
+  highScores= [];
+  static maxLevel = 2;
 
   levelSelected = 0;
-
-  highScores = [ // DEBUG DATA
-    {
-      level: 1,
-      highScores: [
-        {
-          playerName: 'JEAN',
-          time: 7,
-        },
-        {
-          playerName: 'FLOB',
-          time: 12,
-        },
-      ],
-    },
-    {
-      level: 2,
-      highScores: [
-        {
-          playerName: 'LUDO',
-          time: 7,
-        },
-        {
-          playerName: 'JEAN',
-          time: 12,
-        },
-        {
-          playerName: 'SEB',
-          time: 14,
-        },
-      ],
-    },
-  ];
-
+  
   static display() {
-    this.getHighScoresAPI().then((data) => {
-      console.log(data);
+    
+		this.getHighScoresAPI().then(data => {
+			this.highScores = JSON.parse(data);
+			this.displayHighScore(this.levelSelected);
+		});
 
-      HighScores.highScores = JSON.parse(data);
 
-      document.getElementById('homeMenu').classList.add('menuHidden');
-      document.getElementById('highScoresMenu').classList.remove('menuHidden');
-      HighScores.levelSelected = 0;
-      HighScores.getHighScoresForLevel(HighScores.levelSelected);
-      document.getElementById('levelSelectedText').innerHTML = 'Tutorial level';
-    });
+		const menuToDisplay="highScoresMenu";
+		(Array.from(document.getElementsByClassName("menu"))).forEach(element => {
+			if(!element.classList.contains("menuHidden")){
+				element.classList.add("menuHidden");
+			}
+		});
+		document.getElementById(menuToDisplay).classList.remove("menuHidden");
+		
+		this.levelSelected = 0;	
   }
 
   static previousLevel() {
-    if (HighScores.levelSelected !== 0) {
-      HighScores.levelSelected -= 1;
-      HighScores.getHighScoresForLevel(HighScores.levelSelected);
-      if (HighScores.levelSelected === 0) {
+    if (this.levelSelected !== 0) {
+      this.levelSelected -= 1;
+      this.getHighScoresForLevel(this.levelSelected);
+      if (this.levelSelected === 0) {
         document.getElementById('levelSelectedText').innerHTML = 'Tutorial level';
       } else {
-        document.getElementById('levelSelectedText').innerHTML = `Level -${HighScores.levelSelected}-`;
+        document.getElementById('levelSelectedText').innerHTML = `Level -${this.levelSelected}-`;
       }
     }
   }
 
   static nextLevel() {
-    if (HighScores.levelSelected !== HighScores.maxLevel) {
-      HighScores.levelSelected += 1;
-      HighScores.getHighScoresForLevel(HighScores.levelSelected);
+    console.log("this.levelSelected : " + this.levelSelected);
+    console.log("this.maxLevel : " + HighScores.maxLevel);
 
-      document.getElementById('levelSelectedText').innerHTML = `Level -${HighScores.levelSelected}-`;
+    if (this.levelSelected !== HighScores.maxLevel) {
+      this.levelSelected += 1;
+      this.getHighScoresForLevel(this.levelSelected);
+
+      document.getElementById('levelSelectedText').innerHTML = `Level -${this.levelSelected}-`;
     }
   }
 
   static getHighScoresForLevel(level = 0) {
-    HighScores.displayHighScore(level);
+    this.displayHighScore(level);
   }
 
   static displayHighScore(level = 0) {
     const highScoreTable = document.getElementById('highScoreTable');
 
-    const result = HighScores.highScores.filter((element) => element.level === level);
+    const result = this.highScores.filter((element) => element.level === level);
 
     let content = '';
     if (result.length >= 1) {
@@ -110,4 +85,25 @@ class HighScores {
       request.send();
     });
   }
+
+  static postHighScoresViaAPI(level, playerName, time) {
+		
+		return new Promise((resolve, reject) => {
+	
+			var request = new XMLHttpRequest();
+
+			request.open('POST', 'https://scoreback.herokuapp.com', true);
+			request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			request.onload = () => {
+				if(request.status >= 200 && request.status < 300) {
+					resolve(request.response);
+				}
+				else
+				{
+					reject('Error');
+				}
+			}
+			request.send("level="+level+"&playerName="+ playerName+"&time="+time);
+		});
+	}
 }
