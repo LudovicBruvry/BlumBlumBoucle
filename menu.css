@@ -2,13 +2,13 @@
   font-family: 'Press Start 2p';
 }
 body {
-	background-image: url("Assets/Sprites/Fond6.png");
+	background-image: url("Assets/Sprites/Fond6.jpg");
 	font-size: 30pt;
 	font-family: 'Press Start 2p';
 }
 
 h1 {
-  color: gray;	
+  color: gray;
 }
 
 #title {
@@ -43,7 +43,7 @@ h1 {
 .level-selection-buttons-container{
 	display: grid;
 	grid-template-columns: 400px 100px auto 100px 400px;
-} 
+}
 
 #levelSelectedText {
 	text-align: center;
@@ -64,7 +64,7 @@ h1 {
 	-moz-border-radius: 7px;
 	-o-border-radius: 7px;
 	border-radius: 7px;
-    box-shadow: 0 .2em gray; 
+    box-shadow: 0 .2em gray;
     cursor: pointer;
 
 }
@@ -81,7 +81,7 @@ h1 {
 	-moz-border-radius: 7px;
 	-o-border-radius: 7px;
 	border-radius: 7px;
-    box-shadow: 0 .2em gray; 
+    box-shadow: 0 .2em gray;
     cursor: pointer;
 	display: block;
 
@@ -105,7 +105,7 @@ h1 {
 	-moz-border-radius: 7px;
 	-o-border-radius: 7px;
 	border-radius: 7px;
-    box-shadow: 0 .2em gray; 
+    box-shadow: 0 .2em gray;
     cursor: pointer;
 	display: block;
 }
