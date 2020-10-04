@@ -125,3 +125,7 @@ h1 {
 	text-align: center;
 	margin-bottom : 20px;
 }
+
+#p5_loading {
+	opacity: 0;
+}
