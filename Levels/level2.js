@@ -23,7 +23,7 @@ const level = {
     { x: 500, y: 750, size: 150, image: Math.floor(Math.random() * 12), orbitDistance: 50 },
     { x: 700, y: 650, size: 150, image: Math.floor(Math.random() * 12), orbitDistance: 50 },
 
-    { x: 1850, y: 450, size: 15, image: Math.floor(Math.random() * 12), orbitDistance: 50, isEnd: true },
+    { x: 1825, y: 450, size: 60, image: Math.floor(Math.random() * 12), orbitDistance: 50, isEnd: true },
   ],
   background: './Assets/Sprites/Fond6.jpg',
   music: './Assets/Music/LEVEL2.mp3',
@@ -31,10 +31,26 @@ const level = {
   asteroidLines: [
     {
       points: [
+        { x: 200, y: 150 },
+        { x: 200, y: 750 },
+      ],
+    },
+    {
+      points: [
+        { x: 250, y: 425 },
+        { x: 600, y: 450 },
+      ],
+    },
+    {
+      points: [
         { x: 100, y: 500 },
         { x: 400, y: 510 },
-        { x: 500, y: 430 },
-        { x: 1200, y: 600 },
+      ],
+    },
+    {
+      points: [
+        { x: 100, y: 500 },
+        { x: 400, y: 510 },
       ],
     },
   ],
