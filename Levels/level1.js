@@ -1,4 +1,5 @@
 const level = {
+  startAngle: 0,
   planets: [
     { x: 50, y: 50, size: 20, image: Math.floor(Math.random() * 12), orbitDistance: 30, isStart: true },
     { x: 50, y: 125, size: 20, image: Math.floor(Math.random() * 12), orbitDistance: 30 },
