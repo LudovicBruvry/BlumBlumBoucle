@@ -9,10 +9,9 @@ const level_1 = [
 
     { x: 520, y: 160, size: 240, color: '#0FF', orbitDistance: 50 },
     { x: 1000, y: 120, size: 150, color: '#0FF', orbitDistance: 50 },
-    { x: 1400, y: 100, size: 40, color: '#0FF', orbitDistance: 50 },
+    { x: 1460, y: 100, size: 40, color: '#0FF', orbitDistance: 50 },
     { x: 1450, y: 350, size: 40, color: '#0FF', orbitDistance: 50 },
     { x: 1480, y: 520, size: 60, color: '#0FF', orbitDistance: 50 },
-
 
     { x: 500, y: 460, size: 40, color: '#0FF', orbitDistance: 50 },
     { x: 790, y: 440, size: 40, color: '#0FF', orbitDistance: 50 },
@@ -23,7 +22,7 @@ const level_1 = [
     { x: 1300, y: 680, size: 80, color: '#0FF', orbitDistance: 50 },
     { x: 1100, y: 660, size: 80, color: '#0FF', orbitDistance: 50 },
 
-    { x: 1490, y: 700, size: 35, color: '#FF0', orbitDistance: 50 },
+    { x: 1500, y: 700, size: 35, color: '#FF0', orbitDistance: 50 },
 
 ];
 
