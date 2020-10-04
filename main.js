@@ -95,7 +95,7 @@ function moveShipInSpace() {
   if (ship.y < 0 || ship.y > canvasWidth) {
     gameover();
   }
-  
+
   if (ship.deadPlanetIndex > -1) {
     const deadPlanet = planets[ship.deadPlanetIndex];
     const distanceBetweenShipAndPlanet = getDistance(ship.x, ship.y, deadPlanet.x, deadPlanet.y);
