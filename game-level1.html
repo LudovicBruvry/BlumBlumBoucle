@@ -4,10 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press Start 2P">
     <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
+  <div id="bottomGrid">
+    <div id="chrono-container">
+      <div id="chrono">0</div>
+    </div>
+    <div class="button-list">
+        <div class="button" onclick="document.location.reload(true);">RETRY</div>
+        <div class="button" onclick="document.location.href='/'">BACK</div>
+    </div>
+  </div>
+
     <script type="module">
       import { level } from './Levels/level1.js';
       window.level = level;

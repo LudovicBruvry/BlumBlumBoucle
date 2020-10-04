@@ -5,6 +5,11 @@ const SHOW_ORBITS = true;
 const canvasWidth = 1920;
 const canvasHeight = 933;
 
+let chronoStart = null;
+let chronoCurrent = null;
+let chronoEnd = null;
+let isChronoEnded = false;
+
 const level = window.level;
 let planets = level.planets;
 let asteroidLines = level.asteroidLines;
@@ -82,7 +87,25 @@ function gameover() {
 }
 
 function levelEnd() {
-  console.log('Con grat ulation !');
+  isChronoEnded = true;
+  chronoEnd = Date.now();
+  let diff = chronoEnd - chronoStart;
+  const dateDiff = new Date(diff);
+  let seconds = convertTimeDiff(diff);
+}
+
+function displayChrono() {
+  if(!isChronoEnded){
+    chronoCurrent = Date.now();
+    const diff = chronoCurrent - chronoStart;
+    let seconds = convertTimeDiff(diff);
+    document.getElementById("chrono").innerHTML= '' + seconds;
+  }
+}
+
+function convertTimeDiff(diff){
+  const dateDiff = new Date(diff);
+  return (dateDiff.getSeconds() + 60 * dateDiff.getMinutes());
 }
 
 function drawPlanet(_x, _y, _size, _color, i, _orbit) {
@@ -363,6 +386,14 @@ function setup() {
   createCanvas(canvasWidth, canvasHeight);
   setInterval(compute, 10);
   playShipEngineSound();
+  initChronoMeter();
+}
+
+function initChronoMeter(){
+  chronoStart = Date.now();
+  chronoCurrent = Date.now();
+  chronoEnd = Date.now();
+  isChronoEnded = false;
   playLevelMusic();
 }
 
@@ -376,6 +407,7 @@ function draw() {
   drawPlanets();
   drawRays();
   drawShip();
+  displayChrono();
 }
 
 function keyPressed() {

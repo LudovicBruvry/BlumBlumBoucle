@@ -23,7 +23,7 @@ const level = {
     { x: 1300, y: 680, size: 80, image: 'saumon', orbitDistance: 50 },
     { x: 1100, y: 660, size: 80, image: 'saumon', orbitDistance: 50 },
 
-    { x: 1800, y: 775, size: 60, image: 'earth', orbitDistance: 50 },
+    { x: 1800, y: 775, size: 60, image: 'earth', orbitDistance: 50, isEnd: true },
   ],
   background: 'Assets/Sprites/Fond5.jpg',
   music: 'Assets/Music/LEVEL1_2.mp3',

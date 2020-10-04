@@ -13,7 +13,6 @@ const level = {
     { x: 1800, y: 75, size: 15, color: '#FF0', orbitDistance: 50 },
     { x: 1800, y: 200, size: 15, color: '#FF0', orbitDistance: 50 },
     { x: 1800, y: 325, size: 15, color: '#FF0', orbitDistance: 50 },
-    { x: 1850, y: 450, size: 15, color: '#F0F', orbitDistance: 50 },
     { x: 1825, y: 825, size: 60, color: '#FF0', orbitDistance: 50 },
     { x: 1600, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
     { x: 1450, y: 700, size: 15, color: '#FF0', orbitDistance: 50 },
@@ -23,6 +22,8 @@ const level = {
     { x: 300, y: 825, size: 15, color: '#FF0', orbitDistance: 50 },
     { x: 500, y: 750, size: 150, color: '#FF0', orbitDistance: 50 },
     { x: 700, y: 650, size: 150, color: '#FF0', orbitDistance: 50 },
+
+    { x: 1850, y: 450, size: 15, color: '#F0F', orbitDistance: 50, isEnd: true},
     ],
     background : './Assets/Sprites/Fond6.jpg',
     music : './Assets/Music/LEVEL2.mp3',
