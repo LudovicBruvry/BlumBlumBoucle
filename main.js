@@ -156,8 +156,6 @@ function computeClockwise(_ship, _planet, _anchor) {
 }
 
 function calculateShipTrajectory() {
-  const planetOrigin = planets[ship.planetIndex];
-
   // Nose ray
   resetMatrix();
   stroke(color('#000'));
