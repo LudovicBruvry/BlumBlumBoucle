@@ -1,10 +1,6 @@
 /* eslint-disable indent */
 // eslint-disable-next-line import/extensions
-<<<<<<< HEAD
 import { getDistance, intersects, getOrbitAngle, findLinesIntersection, getArrayMin, splitPointsIntoLines, findCircleLinePointsIntersections, getAngle, convertTimeDiff, getPositionAlongTheLine, isLeft } from './mathHelpers.js';
-=======
-import { getDistance, getPerpendicularAtRayon, getCorrectLineBetween2Lines, findCircleLinePointsIntersections, intersects, getOrbitAngle, findLinesIntersection, getArrayMin, splitPointsIntoLines } from './mathHelpers.js';
->>>>>>> c97703296b606df8969007611c0ea257d4228584
 
 const SHOW_ORBITS = true;
 const canvasWidth = 1920;
@@ -26,7 +22,6 @@ let levelBackground = 220;
 const orbitSpeed = 0.3;
 const spaceSpeed = 8;
 const ship = {
-<<<<<<< HEAD
     x: 400,
     y: 400,
     speed: orbitSpeed,
@@ -42,27 +37,6 @@ const ship = {
     nextStepPlanetIndex: -2, // -2 means Void, -1 means Die, >-1 means planetIndex
 };
 let lastShipPlanetIndex = 0;
-=======
-  x: 400,
-  y: 400,
-  speed: orbitSpeed,
-  acceleration: 0,
-  orientation: 0,
-  planetAngle: .7,
-  planetIndex: 0,
-  clockwise: true,
-  isDead: false,
-  isOrbitValidated: false,
-  nextPlanetIndex: -1,
-  deadPlanetIndex: -1,
-  deadPoint: null,
-  anchorPoint: { planetAngle: 0, clockwise: true, point: null },
-  color: 'white',
-};
-let lastShipPlanetIndex = 0;
-let usedPlanetForTrajectory = null;
-let usedSensForTrajectory = 1; // 1->up, 0->isOk, -1->down
->>>>>>> c97703296b606df8969007611c0ea257d4228584
 
 let shipEngineSound;
 let boostSound;
@@ -252,7 +226,6 @@ function getAsteroidLinesDestination(dx, dy) {
     return { distance, planetIndex: -1, point: deadPoint };
 }
 
-<<<<<<< HEAD
 function getPlanetDestination(dx, dy) {
     const shipLine = { a: { x: ship.x, y: ship.y }, b: { x: dx, y: dy } };
     let nearestDistance = Infinity;
@@ -289,42 +262,6 @@ function getPlanetDestination(dx, dy) {
     });
 
     return { distance: nearestDistance, planetIndex: anchorPlanetIndex, point: nearestOrbitPoint };
-=======
-function getShipLine() {
-  const dx = ship.x + (1000 * cos(ship.orientation));
-  const dy = ship.y + (1000 * sin(ship.orientation));
-  return {
-    a: { x: ship.x, y: ship.y },
-    b: { x: dx, y: dy }
-  };
-}
-
-function getShipConeLines() {
-  var shipPoint = { x: ship.x, y: ship.y };
-  const dx = ship.x + (500 * cos(ship.orientation));
-  const dy = ship.y + (500 * sin(ship.orientation));
-  const endPoint = { x: dx, y: dy };
-
-  var perpendicular = getPerpendicularAtRayon({ a: shipPoint, b: endPoint }, shipPoint, 37.5);
-  return [
-    { a: { x: perpendicular[0].x, y: perpendicular[0].y }, b: endPoint },
-    { a: { x: perpendicular[1].x, y: perpendicular[1].y }, b: endPoint }
-  ];
-}
-
-function drawRays() {
-  if (ship.planetIndex < 0) return;
-
-  stroke(color('white'));
-  var lines = [];
-  lines.push(getShipLine());
-  //lines = lines.concat(getShipConeLines());
-
-  lines.forEach((lineObject) => {
-    line(lineObject.a.x, lineObject.a.y, lineObject.b.x, lineObject.b.y);
-  });
-
->>>>>>> c97703296b606df8969007611c0ea257d4228584
 }
 
 function getShipDestination() {
@@ -410,7 +347,6 @@ function drawPlanet(_x, _y, _size, _color, i, _orbit, _isStart, _isEnd) {
     }
 }
 
-<<<<<<< HEAD
 function drawPlanets() {
     planets.forEach(({ x, y, size, color, image, orbitDistance, isStart, isEnd }) => {
         drawPlanet(x, y, size, color, image, orbitDistance, isStart, isEnd);
@@ -421,94 +357,6 @@ function drawShip() {
     resetMatrix();
     translate(ship.x, ship.y);
     rotate(ship.orientation);
-=======
-function validTrajectory(planet, planetIndex, intersectionWithOrbit){
-  ship.isOrbitValidated = true;
-  ship.nextPlanetIndex = planetIndex;
-
-  const shipPoint = { x: ship.x, y: ship.y };
-  const planetPoint = { x: planet.x, y: planet.y };
-  const anchorPoint = getArrayMin(intersectionWithOrbit, (point) => getDistance(ship.x, ship.y, point.x, point.y));
-  ship.orientation = getOrbitAngle(shipPoint, anchorPoint);
-
-  let clockwise = computeClockwise(shipPoint, planetPoint, anchorPoint);
-  //var planetScore = planetPoint.x + (-1 * planetPoint.y);
-  //var shipScore = ship.x + (-1 * ship.y);
-  //var anchorScore = anchorPoint.x + (-1 * anchorPoint.y);
-
-  //if(anchorScore < shipScore) clockwise = true;
-  //if(anchorScore < planetScore) clockwise != clockwise;
-  ship.anchorPoint = { planetAngle: getOrbitAngle(planet, anchorPoint), clockwise: clockwise, point: anchorPoint };
-}
-
-function handlePlanetConeTrajectory(planet, planetIndex, coneLines)
-{
-  coneLines.forEach(lineObject => {
-    lineObject.intersectionWithPlanet = findCircleLinePointsIntersections(planet.size / 2, planet.x, planet.y, lineObject.a, lineObject.b);
-    lineObject.intersectionWithOrbit = findCircleLinePointsIntersections((planet.size + planet.orbitDistance) / 2, planet.x, planet.y, lineObject.a, lineObject.b);
-  });
-
-  var line1 = coneLines[0];
-  var line2 = coneLines[1];
-
-  if(line1.intersectionWithPlanet.length > 0 && line2.intersectionWithPlanet.length > 0){
-    deadPlanetDistance = distance;
-    ship.deadPlanetIndex = planetIndex;
-    return;
-  }
-
-  if(line1.intersectionWithOrbit.length < 1 && line2.intersectionWithOrbit.length < 1){
-    return;
-  }
-
-  const onlyOneLineTouchPlanet =
-       line1.intersectionWithPlanet.length > 0 && line2.intersectionWithPlanet.length < 1
-    || line1.intersectionWithPlanet.length < 1 && line2.intersectionWithPlanet.length > 0;
-
-  const touchOrbitButNotPlanet =
-       (line1.intersectionWithPlanet.length < 1 && line2.intersectionWithPlanet.length < 1)
-    && (line1.intersectionWithOrbit.length  > 0 || line2.intersectionWithOrbit.length  > 0);
-
-  if(onlyOneLineTouchPlanet || touchOrbitButNotPlanet){
-    let lineMedium = null;
-    if(line1.intersectionWithPlanet.length < 1 && line1.intersectionWithOrbit.length > 0){
-      lineMedium = line1;
-    }
-    else if(line2.intersectionWithPlanet.length < 1 && line2.intersectionWithOrbit.length > 0){
-      lineMedium = line2;
-    }
-    else{
-      usedPlanetForTrajectory = planet;
-      usedSensForTrajectory = calculateSensForTrajectory(planet);
-      mediumLine = getCorrectLineBetween2Lines(line1, line2, usedSensForTrajectory, isUpDownOrEqualTrajectory);
-    }
-
-    const anchorList = findCircleLinePointsIntersections(
-      (planet.size + planet.orbitDistance) / 2, planet.x, planet.y,
-      lineMedium.a, lineMedium.b);
-
-    validTrajectory(planet, planetIndex, anchorList);
-    return anchorList.length > 0;
-  }
-}
-
-function isUpDownOrEqualTrajectory(lineMedium) {
-  var intersectWithPlanet = findCircleLinePointsIntersections(
-    usedPlanetForTrajectory.size / 2, usedPlanetForTrajectory.x, usedPlanetForTrajectory.y,
-    lineMedium.a, lineMedium.b);
-
-  var intersectWithOrbit = findCircleLinePointsIntersections(
-    (usedPlanetForTrajectory.size + usedPlanetForTrajectory.orbitDistance) / 2, usedPlanetForTrajectory.x, usedPlanetForTrajectory.y,
-    lineMedium.a, lineMedium.b);
-
-  if (intersectWithPlanet.length < 1 && intersectWithOrbit.length > 0) return 0; // Perfect Trajectory
-  return usedSensForTrajectory;
-}
-
-function calculateSensForTrajectory(planet) {
-  var shipPos = ship.x + (-1 * ship.y);
-  var planetPos = planet.x + (-1 * planet.y);
->>>>>>> c97703296b606df8969007611c0ea257d4228584
 
     fill(color('#fd8700'));
     noStroke();
@@ -520,7 +368,6 @@ function calculateSensForTrajectory(planet) {
     image(images.ship, -13.7, -10, 27, 20);
 }
 
-<<<<<<< HEAD
 function drawRays() {
     ship.color = 'white';
     if (ship.planetIndex < 0) return;
@@ -571,28 +418,9 @@ function displayChrono() {
         const diff = chronoCurrent - chronoStart;
         const seconds = convertTimeDiff(diff);
         document.getElementById('chrono').innerHTML = `${seconds}`;
-=======
-function handlePlanetsTrajectory(dx, dy) {
-  let deadPlanetDistance = Infinity;
-  let validOrbitDistance = Infinity;
-  var shipLine = getShipLine();
-  var shipConeLines = getShipConeLines();
-
-  planets.forEach((planet, planetIndex) => {
-    const { x, y, size, orbitDistance } = planet;
-
-    if (planetIndex === ship.planetIndex) {
-      return; // No need to check collision beetween the planet where the ship is
-    }
-
-    const distance = getDistance(ship.x, ship.y, planet.x, planet.y);
-    if (distance > deadPlanetDistance || distance > validOrbitDistance) {
-      return; // No need to check collision beetween this planet because the ship will colide with an another planet before this one
->>>>>>> c97703296b606df8969007611c0ea257d4228584
     }
 }
 
-<<<<<<< HEAD
 function setup() {
     setBackground();
     createCanvas(canvasWidth, canvasHeight);
@@ -618,37 +446,6 @@ function keyPressed() {
         playBoost();
         ship.planetIndex = -1;
     }
-=======
-    const intersectionWithPlanet = findCircleLinePointsIntersections(planet.size / 2, planet.x, planet.y, shipLine.a, shipLine.b);
-    const intersectionWithOrbit = findCircleLinePointsIntersections((planet.size + planet.orbitDistance) / 2, planet.x, planet.y, shipLine.a, shipLine.b);
-    if(intersectionWithPlanet.length === 0 && intersectionWithOrbit.length >= 1){
-      validOrbitDistance = distance;
-      validTrajectory(planet, planetIndex, intersectionWithOrbit);
-      return;
-    }
-
-    var isOk = handlePlanetConeTrajectory(planet, planetIndex, shipConeLines);
-    if(isOk) validOrbitDistance = distance;
-  });
-
-  ship.isDead = ship.isDead || !ship.isOrbitValidated;
-}
-
-function calculateShipTrajectory() {
-  let dx = ship.x + (1000 * cos(ship.orientation));
-  let dy = ship.y + (1000 * sin(ship.orientation));
-
-  ship.isDead = false;
-  ship.speed = spaceSpeed;
-  ship.acceleration = -0.1;
-
-  handlePlanetsTrajectory(dx, dy);
-
-  // dx and dy may have changed
-  dx = ship.x + (1000 * cos(ship.orientation));
-  dy = ship.y + (1000 * sin(ship.orientation));
-  handleAsteroidLinesTrajectory(dx, dy);
->>>>>>> c97703296b606df8969007611c0ea257d4228584
 }
 
 // -------------------------------------------------------------------
