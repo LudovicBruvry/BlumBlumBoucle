@@ -550,5 +550,4 @@ window.keyPressed = keyPressed;
 window.preload = preload;
 window.touchStarted = touchStarted;
 window.tryToGoToNextLevel = tryToGoToNextLevel;
-// eslint-disable-next-line eol-last
 window.tryToQuit = tryToQuit;
