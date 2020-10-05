@@ -40,6 +40,30 @@ function rotatePoint(origin, point, angle) {
     };
 }
 
+function isPointInLine(point, line) {
+  return (
+      ((point.x >= line.a.x && point.x <= line.b.x)
+      && (point.y >= line.a.y && point.y <= line.b.y))
+      ||
+      ((point.x >= line.b.x && point.x <= line.a.x)
+      && (point.y >= line.b.y && point.y <= line.a.y))
+  );
+}
+
+function findCircleLinePointsIntersections(r, x, y, pointA, pointB) {
+  const m = (pointA.y - pointB.y) / (pointA.x - pointB.x);
+  const n = pointA.y - (m * pointA.x);
+  let result = findCircleLineIntersections(r, x, y, m, n);
+  result = result.filter(point => isPointInLine(point, { a: pointA, b: pointB }));
+  return result;
+}
+
+function getSlope(line) {
+  const m = (line.a.y - line.b.y) / (line.a.x - line.b.x);
+  const n = line.a.y - (m * line.a.x);
+  return { m, n }
+}
+
 function findCircleLineIntersections(r, h, k, m, n) {
     // circle: (x - h)^2 + (y - k)^2 = r^2
     // line: y = m * x + n
@@ -90,7 +114,19 @@ function intersects(a, b, c, d, p, q, r, s) {
 }
 
 function getOrbitAngle(planet, point) {
+<<<<<<< HEAD
     return atan2(point.y - planet.y, point.x - planet.x);
+=======
+  return atan2(point.y - planet.y, point.x - planet.x);
+}
+
+function getPerpendicularAtRayon(line, point, rayon) {
+  const im = (line.a.y - line.b.y) / (line.a.x - line.b.x);
+  const m = -1 / im;
+  const n = line.a.y - (m * line.a.x);
+
+  return findCircleLineIntersections(rayon, point.x, point.y, m, n);
+>>>>>>> c97703296b606df8969007611c0ea257d4228584
 }
 
 function findLinesIntersection(point1, point2, point3, point4) {
@@ -139,7 +175,15 @@ function getMediumPoint(pointA, pointB) {
     };
 }
 
+function IsSameLine(line1, line2, peech) {
+  return line1.a.x - line2.a.x < peech
+    && line1.a.y - line2.a.y < peech
+    && line1.b.x - line2.b.x < peech
+    && line1.b.y - line2.b.y < peech;
+}
+
 function getCorrectLineBetween2Lines(line1, line2, initialSens, isUpDownOrEqual) {
+<<<<<<< HEAD
     let sens = initialSens; // 1->up, 0->isOk, -1->down
     let lineUp = line1;
     let lineDown = line2;
@@ -164,10 +208,35 @@ function convertTimeDiff(diff) {
     const dateDiff = new Date(diff);
     return (dateDiff.getSeconds() + 60 * dateDiff.getMinutes());
 }
+=======
+  let sens = initialSens; // 1->up, 0->isOk, -1->down
+  let lineUp = line1;
+  let lineDown = line2;
+  let lineMedium = initialSens === 1 ? lineDown : lineUp;
+  var lineLimit = initialSens === 1 ? lineUp : lineDown;
+  var maxIteration = 15;
+
+  do {
+    if (sens === 1) lineDown = lineMedium; // Move Up
+    else if (sens === -1) lineUp = lineMedium; // Move down
+
+    lineMedium = {
+      a: getMediumPoint(lineUp.a, lineDown.a),
+      b: getMediumPoint(lineUp.b, lineDown.b),
+    };
+    sens = isUpDownOrEqual(lineMedium);
+    maxIteration-=1;
+  }
+  while (maxIteration > 0 && sens !== 0 && IsSameLine(lineLimit, lineMedium, 2));
+>>>>>>> c97703296b606df8969007611c0ea257d4228584
 
 function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
     return { x: x1 * (1.0 - percentage) + x2 * percentage, y: y1 * (1.0 - percentage) + y2 * percentage };
 }
 
+<<<<<<< HEAD
 // eslint-disable-next-line eol-last
 export { getDistance, findCircleLineIntersections, intersects, getOrbitAngle, findCircleLinePointsIntersections, findLinesIntersection, getArrayMin, splitPointsIntoLines, getMediumPoint, getCorrectLineBetween2Lines, getAngle, rotatePoint, convertTimeDiff, getPositionAlongTheLine, isLeft };
+=======
+export { getDistance, getPerpendicularAtRayon, findCircleLineIntersections, intersects, getOrbitAngle, findCircleLinePointsIntersections, findLinesIntersection, getArrayMin, splitPointsIntoLines, getMediumPoint, getCorrectLineBetween2Lines };
+>>>>>>> c97703296b606df8969007611c0ea257d4228584
