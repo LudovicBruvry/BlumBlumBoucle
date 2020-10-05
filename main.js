@@ -1,11 +1,11 @@
 /* eslint-disable indent */
 // eslint-disable-next-line import/extensions
-import { getDistance, intersects, getOrbitAngle, findLinesIntersection, getArrayMin, splitPointsIntoLines, findCircleLinePointsIntersections, rotatePoint, getAngle, convertTimeDiff, getPositionAlongTheLine, isLeft } from './mathHelpers.js';
+import { getDistance, intersects, getOrbitAngle, findLinesIntersection, getArrayMin, splitPointsIntoLines, findCircleLinePointsIntersections, getAngle, convertTimeDiff, getPositionAlongTheLine, isLeft } from './mathHelpers.js';
 
 const SHOW_ORBITS = true;
 const canvasWidth = 1920;
 const canvasHeight = 933;
-
+const angleLimitForAttach = 150;
 let chronoStart = null;
 let chronoCurrent = null;
 let chronoEnd = null;
@@ -27,7 +27,7 @@ const ship = {
     speed: orbitSpeed,
     acceleration: 0,
     orientation: 0,
-    planetAngle: -0.2,
+    planetAngle: level.startAngle,
     planetIndex: 0,
     clockwise: true,
     nextPlanetIndex: -1,
@@ -36,15 +36,13 @@ const ship = {
     nextStepRemainingTick: 0,
     nextStepPlanetIndex: -2, // -2 means Void, -1 means Die, >-1 means planetIndex
 };
-let lastShipPlanetIndex = 4;
+let lastShipPlanetIndex = 0;
 
 let shipEngineSound;
 let boostSound;
 let explodeSound2;
 let levelMusic;
 let images;
-let linesDebug = [];
-let targetPoint = null;
 
 function preload() {
     shipEngineSound = loadSound('./Assets/Sound/MoteurVaisseau.mp3');
@@ -202,7 +200,7 @@ function moveShip() {
 // ------------------------------------------------ Calculate Trajectory Obstacle
 // -------------------------------------------------------------------
 
-function handleAsteroidLinesTrajectory(dx, dy) {
+function getAsteroidLinesDestination(dx, dy) {
     const deadAsteroidPoints = [];
 
     asteroidLines.forEach((asteroidLine) => {
@@ -215,28 +213,72 @@ function handleAsteroidLinesTrajectory(dx, dy) {
         });
     });
 
-    if (deadAsteroidPoints.length < 1) return;
+    if (deadAsteroidPoints.length < 1) {
+        return {
+            distance: Infinity,
+            planetIndex: -2, // means void
+            point: { x: dx, y: dy },
+        };
+    }
 
     const deadPoint = getArrayMin(deadAsteroidPoints, (point) => getDistance(ship.x, ship.y, point.x, point.y));
-    if (deadPoint !== null) {
-        const distance = getDistance(ship.x, ship.y, deadPoint.x, deadPoint.y);
-        const tickUntilDead = parseInt(distance / spaceSpeed, 10);
-        if (ship.nextStepRemainingTick > tickUntilDead) {
-            ship.nextStepRemainingTick = tickUntilDead;
-            ship.nextStepPlanetIndex = -1; // means dead
-        }
-    }
+    const distance = getDistance(ship.x, ship.y, deadPoint.x, deadPoint.y);
+    return { distance, planetIndex: -1, point: deadPoint };
 }
 
-function validTrajectory(planet, planetIndex, intersectionWithOrbit) {
-    ship.nextStepPlanetIndex = planetIndex;
+function getPlanetDestination(dx, dy) {
+    const shipLine = { a: { x: ship.x, y: ship.y }, b: { x: dx, y: dy } };
+    let nearestDistance = Infinity;
+    let nearestOrbitPoint = { x: dx, y: dy };
+    let anchorPlanetIndex = -2;
 
+    planets.forEach((planet, planetIndex) => {
+        if (planetIndex === ship.planetIndex) {
+            return; // No need to check collision beetween the planet where the ship is
+        }
+
+        const distance = getDistance(ship.x, ship.y, planet.x, planet.y);
+        if (distance > nearestDistance) {
+            return; // No need to check collision with this planet because the ship will colide with  another things before
+        }
+
+        const intersectionWithOrbit = findCircleLinePointsIntersections((planet.size + planet.orbitDistance) / 2, planet.x, planet.y, shipLine.a, shipLine.b);
+        if (intersectionWithOrbit.length < 1) return;
+        nearestOrbitPoint = getArrayMin(intersectionWithOrbit, (point) => getDistance(ship.x, ship.y, point.x, point.y));
+        nearestDistance = getDistance(ship.x, ship.y, nearestOrbitPoint.x, nearestOrbitPoint.y);
+
+        // get angle
+        const planetPoint = { x: planet.x, y: planet.y };
+        const angleOrbit = getAngle(shipLine.a, nearestOrbitPoint, planetPoint);
+        let isCrash = angleOrbit > angleLimitForAttach;
+        if (isCrash) {
+            const intersectionWithPlanet = findCircleLinePointsIntersections(planet.size / 2, planet.x, planet.y, shipLine.a, shipLine.b);
+            if (intersectionWithPlanet.length < 1) isCrash = false;
+            else {
+                nearestOrbitPoint = getArrayMin(intersectionWithPlanet, (point) => getDistance(ship.x, ship.y, point.x, point.y));
+            }
+        }
+        anchorPlanetIndex = isCrash ? -1 : planetIndex;
+    });
+
+    return { distance: nearestDistance, planetIndex: anchorPlanetIndex, point: nearestOrbitPoint };
+}
+
+function getShipDestination() {
+    const dx = ship.x + (1000 * cos(ship.orientation));
+    const dy = ship.y + (1000 * sin(ship.orientation));
+    const asteroidDestination = getAsteroidLinesDestination(dx, dy);
+    const planetDestination = getPlanetDestination(dx, dy, asteroidDestination.distance);
+    const destinationList = [asteroidDestination, planetDestination];
+    return getArrayMin(destinationList, (destination) => destination.distance);
+}
+
+function validTrajectory(destination) {
+    const planet = planets[destination.planetIndex];
     const shipPoint = { x: ship.x, y: ship.y };
     const planetPoint = { x: planet.x, y: planet.y };
-    const anchorPoint = getArrayMin(intersectionWithOrbit, (point) => getDistance(ship.x, ship.y, point.x, point.y));
+    const anchorPoint = destination.point;
 
-    const distance = getDistance(ship.x, ship.y, anchorPoint.x, anchorPoint.y);
-    ship.nextStepRemainingTick = parseInt(distance / spaceSpeed, 10);
     const clockwise = !isLeft(shipPoint, planetPoint, anchorPoint);
     ship.anchorPoint = {
         planetAngle: getOrbitAngle(planet, anchorPoint),
@@ -245,46 +287,16 @@ function validTrajectory(planet, planetIndex, intersectionWithOrbit) {
     };
 }
 
-function handlePlanetsTrajectory(dx, dy) {
-    const shipLine = { a: { x: ship.x, y: ship.y }, b: { x: dx, y: dy } };
-
-    planets.forEach((planet, planetIndex) => {
-        if (planetIndex === ship.planetIndex) {
-            return; // No need to check collision beetween the planet where the ship is
-        }
-
-        const distance = getDistance(ship.x, ship.y, planet.x, planet.y);
-        const tickUntilDistance = distance / spaceSpeed;
-        if (ship.nextStepPlanetIndex > -2 && tickUntilDistance > ship.nextStepRemainingTick) {
-            return; // No need to check collision beetween this planet because the ship will colide with an another planet before this one
-        }
-
-        const intersectionWithPlanet = findCircleLinePointsIntersections(planet.size / 2, planet.x, planet.y, shipLine.a, shipLine.b);
-        const intersectionWithOrbit = findCircleLinePointsIntersections((planet.size + planet.orbitDistance) / 2, planet.x, planet.y, shipLine.a, shipLine.b);
-
-        if (intersectionWithPlanet.length > 0) {
-            const nearestPointDead = getArrayMin(intersectionWithOrbit, (point) => getDistance(ship.x, ship.y, point.x, point.y));
-            const distanceDead = getDistance(ship.x, ship.y, nearestPointDead.x, nearestPointDead.y);
-            ship.nextStepRemainingTick = parseInt(distanceDead / spaceSpeed, 10);
-            ship.nextStepPlanetIndex = -1;
-        } else if (intersectionWithPlanet.length === 0 && intersectionWithOrbit.length >= 1) {
-            validTrajectory(planet, planetIndex, intersectionWithOrbit);
-        }
-    });
-}
-
 function calculateShipTrajectory() {
     ship.nextStepRemainingTick = 0;
     ship.nextStepPlanetIndex = -2;
-    const dx = ship.x + (1000 * cos(ship.orientation));
-    const dy = ship.y + (1000 * sin(ship.orientation));
-
     ship.speed = spaceSpeed;
     ship.acceleration = -0.1;
-    ship.nextStepRemainingTick = Infinity;
-
-    handleAsteroidLinesTrajectory(dx, dy);
-    handlePlanetsTrajectory(dx, dy);
+    const destination = getShipDestination();
+    if (destination.planetIndex === -2) return;
+    ship.nextStepRemainingTick = parseInt(destination.distance / spaceSpeed, 10);
+    ship.nextStepPlanetIndex = destination.planetIndex;
+    if (destination.planetIndex > -1) validTrajectory(destination);
 }
 
 // -------------------------------------------------------------------
@@ -360,11 +372,13 @@ function drawRays() {
     ship.color = 'white';
     if (ship.planetIndex < 0) return;
 
-    resetMatrix();
-    stroke(color(ship.color));
-    translate(ship.x, ship.y);
-    rotate(ship.orientation);
-    line(0, 0, 2000, 0);
+    stroke(color('white'));
+    const destination = getShipDestination();
+    line(ship.x, ship.y, destination.point.x, destination.point.y);
+    if (destination.planetIndex === -1) {
+        fill(color('red'));
+        ellipse(destination.point.x, destination.point.y, 5, 5);
+    }
 }
 
 function createAsteriodPoints() {
@@ -424,15 +438,6 @@ function draw() {
     drawRays();
     drawShip();
     displayChrono();
-
-    if (linesDebug.length < 1) return;
-    resetMatrix();
-    stroke(color('red'));
-    linesDebug.forEach((lineObject) => {
-        line(lineObject.a.x, lineObject.a.y, lineObject.b.x, lineObject.b.y);
-    });
-    stroke(color('blue'));
-    ellipse(targetPoint.x, targetPoint.y, 20, 20);
 }
 
 function keyPressed() {

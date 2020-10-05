@@ -19,7 +19,7 @@ function getAngle(a, b, c) {
     const AB = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
     const BC = Math.sqrt(Math.pow(b.x - c.x, 2) + Math.pow(b.y - c.y, 2));
     const AC = Math.sqrt(Math.pow(c.x - a.x, 2) + Math.pow(c.y - a.y, 2));
-    return Math.acos((BC * BC + AB * AB - AC * AC) / (2 * BC * AB));
+    return Math.acos((BC * BC + AB * AB - AC * AC) / (2 * BC * AB)) * 180 / Math.PI;
 }
 
 function isLeft(a, b, c) {
@@ -112,7 +112,7 @@ function getArrayMin(array, getValue) {
 
     array.forEach((element) => {
         const value = getValue(element);
-        if (value < minimum) {
+        if (value <= minimum) {
             minimum = value;
             result = element;
         }
