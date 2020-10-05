@@ -518,19 +518,20 @@ function tryToGoToNextLevel() {
     if (!apiSendInAction) {
         const playerNameIsValid = checkPlayerName();
         if (playerNameIsValid) {
-            document.getElementById('error-message').classList.add('invisible');
-            const playerNameInput = document.getElementById('playerNameInput');
+            document.getElementById("error-message").classList.add("invisible");
+            const playerNameInput = document.getElementById("playerNameInput");
             apiSendInAction = true;
             postHighScoresViaAPI(level.levelNumber, playerNameInput.value, timeToFinishLevel).then(data => {
                 apiSendInAction = false;
-                if (level.levelNumber === 2) {
+                if (level.levelNumber == 2) {
                     goToCredits();
                 } else {
                     goToNextLevel(level.levelNumber + 1)
                 }
+
             });
         } else {
-            document.getElementById('error-message').classList.remove('invisible');
+            document.getElementById("error-message").classList.remove("invisible");
         }
     }
 }
